@@ -1,0 +1,28 @@
+/* App.css - для src/App.css */
+
+/* Минимальные глобальные стили для App */
+#root {
+    width: 100%;
+    min-height: 100vh;
+  }
+  
+  /* Убираем стандартные стили для React Router ссылок */
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  
+  /* Плавные переходы между страницами */
+  .page-transition {
+    animation: fadeIn 0.3s ease-in;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  

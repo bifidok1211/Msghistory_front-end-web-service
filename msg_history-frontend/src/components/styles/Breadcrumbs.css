@@ -1,0 +1,46 @@
+/* ==========================================
+   BREADCRUMBS (КРОШКИ) - TELEGRAM STYLE
+   ========================================== */
+   .modern-breadcrumbs {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 12px 24px !important;
+    
+    background: #F5F5F5 !important;
+    border: 1px solid #E1E5EA !important;
+    border-radius: 8px !important;
+    box-shadow: 4px 4px 0 #D9D9D9 !important;
+    
+    font-family: "Open Sans", Arial, sans-serif !important;
+}
+
+.breadcrumb-item {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.breadcrumb-link {
+    font-family: "Open Sans", Arial, sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #0088CC !important;
+    text-decoration: none !important;
+    transition: color 0.2s ease-in-out !important;
+}
+
+.breadcrumb-link:hover {
+    color: #006699 !important;
+    text-decoration: underline !important;
+}
+
+.breadcrumb-active {
+    font-family: "Open Sans", Arial, sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #000 !important;
+}
+
+.breadcrumb-separator {
+    margin: 0 10px !important;
+    color: #7A7A7A !important;
+}
