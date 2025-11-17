@@ -3,7 +3,7 @@ import { CHANNELS_MOCK } from './mock';
 
 const API_PREFIX = '/api';
 
-// Получение списка факторов с фильтраией по названию
+// Получение списка каналов с фильтраией по названию
 export const getChannels = async (title: string): Promise<IPaginatedChannels> => {
     const url = title 
         ? `${API_PREFIX}/channels?title=${encodeURIComponent(title)}`
@@ -28,7 +28,7 @@ export const getChannels = async (title: string): Promise<IPaginatedChannels> =>
     }
 };
 
-// Получение одного фактора по ID
+// Получение одного канала по ID
 export const getChannelById = async (id: string): Promise<IChannel | null> => {
     try {
         const response = await fetch(`${API_PREFIX}/channels/${id}`);
