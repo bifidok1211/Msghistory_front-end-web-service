@@ -1,16 +1,20 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { getChannelById } from '../api/channelApi';
+import { useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { getChannelById } from '../api/channelsApi';
+import {CustomBreadcrumbs} from '../components/Breadcrumbs'
 import type { IChannel } from '../types';
-import { CustomBreadcrumbs } from '../components/Breadcrumbs';
 import './styles/ChannelDetailPage.css';
+import { dest_root } from '../config/tauri_config';
 
-export const DefaultImage = '/mock_images/default.png';
 
+export const DefaultImage = `${dest_root}mock_images/default.png`;
 export const ChannelDetailPage = () => {
+    
     const { id } = useParams<{ id: string }>();
     const [channel, setChannel] = useState<IChannel | null>(null);
     const [loading, setLoading] = useState(true);
+    const displayImage = channel?.image || DefaultImage;
 
     useEffect(() => {
         if (id) {
@@ -20,8 +24,6 @@ export const ChannelDetailPage = () => {
                 .finally(() => setLoading(false));
         }
     }, [id]);
-
-    const displayImage = channel?.image || DefaultImage;
 
     if (loading) {
         return (

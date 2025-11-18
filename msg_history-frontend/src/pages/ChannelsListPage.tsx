@@ -1,16 +1,22 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getChannels, getCartBadge } from '../api/channelApi';
-import type { IChannel, ICartBadge } from '../types';
+import { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { getChannels, getCartBadge} from '../api/channelsApi';
+import { setSearchTerm, selectSearchTerm } from '../store/slices/filterSlice';
+import { dest_root } from '../config/tauri_config';
+import type { AppDispatch } from '../store';
+import type { IChannel, ICartBadge} from '../types';
 import './styles/ChannelsListPage.css';
 
-export const DefaultImage = 'http://localhost:9000/images/tg_channels/default.png'
+const cartImage = `${dest_root}/mock_images/cart.png`;
 
 export const ChannelsListPage = () => {
     const [channels, setChannels] = useState<IChannel[]>([]);
     const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState('');
     const [cartBadge, setCartBadge] = useState<ICartBadge>({ msghistory_id: null, count: 0 });
+
+    const dispatch = useDispatch<AppDispatch>();
+    const searchTerm = useSelector(selectSearchTerm);
 
     const fetchChannels = (filterTitle: string) => {
         setLoading(true);
@@ -52,7 +58,7 @@ export const ChannelsListPage = () => {
                         type="search"
                         placeholder="Введите название канала для поиска..."
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={(e) => dispatch(setSearchTerm(e.target.value))}
                     />
                 </form>
 
@@ -85,7 +91,7 @@ export const ChannelsListPage = () => {
                         <div key={channel.id} className="card card--vertical">
                             <img 
                                 className="card-img" 
-                                src={channel.image || DefaultImage} 
+                                src={channel.image || cartImage} 
                                 alt={channel.title}
                             />
                             <div className="card-content">

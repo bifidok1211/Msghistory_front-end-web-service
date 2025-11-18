@@ -1,42 +1,43 @@
 /* index.css - ПРАВИЛЬНАЯ версия под ваш дизайн */
 
 body {
-  margin: 0;
-  padding: 70px 0 40px;
-  font-family: "Open Sans", Arial, sans-serif;
-  color: #000;
-  background-color: #ffffff;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-button {
-  font-family: "Open Sans", Arial, sans-serif;
-  cursor: pointer;
-}
-
-/* Сброс стилей для заголовков */
-h1, h2, h3, h4, h5, h6 {
-  margin: 0;
-  font-family: "Open Sans", Arial, sans-serif;
-}
-
-/* Сброс стилей для параграфов */
-p {
-  margin: 0;
-  font-family: "Open Sans", Arial, sans-serif;
-}
-
-/* Глобальные утилиты */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
+    margin: 0;
+    padding: 70px 0 40px;
+    font-family: "Open Sans", Arial, sans-serif;
+    color: #000;
+    background-color: #ffffff;
+  }
+  
+  * {
+    box-sizing: border-box;
+  }
+  
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  button {
+    font-family: "Open Sans", Arial, sans-serif;
+    cursor: pointer;
+  }
+  
+  /* Сброс стилей для заголовков */
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    font-family: "Open Sans", Arial, sans-serif;
+  }
+  
+  /* Сброс стилей для параграфов */
+  p {
+    margin: 0;
+    font-family: "Open Sans", Arial, sans-serif;
+  }
+  
+  /* Глобальные утилиты */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  

@@ -1,0 +1,41 @@
+{
+  "productName": "msghistory-frontend",
+  "version": "0.1.0",
+  "identifier": "org.msghistory.desktop",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:3000",
+    "beforeDevCommand": "npm run dev", 
+    "beforeBuildCommand": "npm run build:tauri"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "msghistory-frontend",
+        "width": 800,
+        "height": 600,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  },
+  "plugins": {
+    "http": {
+      "scope": ["http://10.128.146.23:*"],
+      "dangerousAcceptAnyServerCertificate": true
+    }
+  }
+}

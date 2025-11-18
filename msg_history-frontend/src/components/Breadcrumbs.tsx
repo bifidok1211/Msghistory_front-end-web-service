@@ -1,11 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import type { ICrumb } from '../types';
+import type { BreadcrumbsProps } from '../types';
 import './styles/Breadcrumbs.css';
 
-interface BreadcrumbsProps {
-  crumbs: ICrumb[];
-}
+
 
 export const CustomBreadcrumbs: React.FC<BreadcrumbsProps> = ({ crumbs }) => {
   const allCrumbs = [{ label: 'Главная', path: '/' }, ...crumbs];
