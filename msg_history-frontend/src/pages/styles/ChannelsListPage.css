@@ -181,7 +181,7 @@
   .card.card--vertical {
     width: 300px !important;
     height: auto !important;
-    min-height: 0 !important;                /* ГЛАВНОЕ: убрали фикс. 380px */
+    min-height: 0 !important;                
     padding: 20px !important;
     background: #F5F5F5 !important;
     border: 1px solid #E1E5EA !important;
@@ -276,5 +276,157 @@
     font-family: "Open Sans", Arial, sans-serif;
     font-size: 18px;
     color: #666;
+  }
+  
+  /* ==========================================
+     АДАПТИВНОСТЬ
+     ========================================== */
+  
+  /* Планшеты и небольшие ноутбуки (до 1024px) */
+  @media (max-width: 1024px) {
+    body {
+      padding-top: 70px;
+      padding-bottom: 30px;
+    }
+  
+    .tg-header {
+      padding-left: 20px;
+    }
+  
+    .search-row {
+      padding: 0 16px;
+    }
+  
+    .search-input {
+      width: 100%;
+      max-width: 100%;
+    }
+  
+    .container.channels-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      max-width: 100% !important;
+      padding: 0 16px;
+    }
+  
+    .card.card--vertical {
+      width: 100% !important;
+    }
+  }
+  
+  /* Мобильные устройства (до 768px) */
+  @media (max-width: 768px) {
+    body {
+      padding-top: 70px;
+      padding-bottom: 25px;
+    }
+  
+    .tg-header {
+      padding-left: 16px;
+      justify-content: center;
+    }
+  
+    .logo {
+      align-items: center;
+    }
+  
+    .logo-title {
+      font-size: 20px;
+    }
+  
+    .logo-subtitle {
+      font-size: 12px;
+    }
+  
+    .page-title {
+      font-size: 20px;
+      margin: 12px 0 16px;
+      padding: 0 12px;
+    }
+  
+    .search-row {
+      max-width: 100%;
+      padding: 0 12px;
+      gap: 10px;
+    }
+  
+    .search-form {
+      flex: 1 1 auto;
+    }
+  
+    .search-input {
+      width: 100%;
+    }
+  
+    .badge-icon {
+      flex-shrink: 0;
+    }
+  
+    .container {
+      margin: 16px auto;
+      padding: 0 12px;
+      max-width: 100%;
+    }
+  
+    .container.channels-grid {
+      grid-template-columns: 1fr 1fr !important;
+      gap: 20px !important;
+      padding: 0 12px;
+    }
+  
+    .card.card--vertical {
+      width: 100% !important;
+      padding: 16px !important;
+    }
+  
+    .card.card--vertical .card-img {
+      width: 140px !important;
+      height: 140px !important;
+    }
+  
+    .tg-btn,
+    .card-button {
+      width: 100% !important;
+      min-width: 0 !important;
+    }
+  }
+  
+  /* Очень маленькие экраны (до 480px) */
+  @media (max-width: 480px) {
+    body {
+      padding-top: 64px;
+      padding-bottom: 20px;
+    }
+  
+    .tg-header {
+      height: 64px;
+    }
+  
+    .page-title {
+      font-size: 18px;
+      margin: 10px 0 14px;
+    }
+  
+    .search-row {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+  
+    .badge-icon {
+      align-self: flex-end;
+    }
+  
+    .container.channels-grid {
+      grid-template-columns: 1fr !important;
+    }
+  
+    .card.card--vertical .card-title {
+      font-size: 16px !important;
+    }
+  
+    .card.card--vertical .card-img {
+      width: 120px !important;
+      height: 120px !important;
+    }
   }
   

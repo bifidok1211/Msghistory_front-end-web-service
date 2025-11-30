@@ -2,11 +2,16 @@ import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
-export default defineConfig(({ command }) => {
+export default defineConfig(({ mode }) => {
+  let base = '/'
 
-  const base = command === 'build'
-    ? '/RIP_front-end/'
-    : '/';
+  if (mode === 'tauri') {
+    // сборка для Tauri
+    base = './'
+  } else if (mode === 'production') {
+    // обычный web-build (npm run build)
+    base = '/RIP_front-end/'
+  }
 
   return {
     base,
@@ -23,7 +28,7 @@ export default defineConfig(({ command }) => {
           start_url: ".",
           display: "standalone",
           background_color: "#ffffff",
-          theme_color: "#E60023",
+          theme_color: "#ffffff",
           icons: [
             { src: 'logo/logo32.png', type: 'image/png', sizes: '32x32' },
             { src: 'logo/logo192.png', type: 'image/png', sizes: '192x192', purpose: 'any maskable' },
@@ -40,6 +45,7 @@ export default defineConfig(({ command }) => {
       //   cert: fs.readFileSync('localhost.pem'),
       //   ca: fs.readFileSync('rootCA.pem'),
       // },
+      host: "0.0.0.0",
       proxy: {
         '/api': {
           target: 'http://10.128.146.23:8090',

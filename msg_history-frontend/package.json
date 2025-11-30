@@ -1,4 +1,3 @@
-
 {
   "name": "msghistory-frontend",
   "homepage": "https://bifidok1211.github.io/RIP_front-end/",
@@ -6,10 +5,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "tauri": "tauri",
-    "build:tauri": "vite build --mode tauri",
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:tauri": "vite build --mode tauri",
+    "tauri": "tauri",
     "deploy": "gh-pages -d dist",
     "lint": "eslint .",
     "preview": "vite preview"

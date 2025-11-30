@@ -1,11 +1,8 @@
-import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
+import { HashRouter, Routes, Route, Outlet } from 'react-router-dom';
 import { AppNavbar } from './components/Navbar';
 import { MsghistoryHomePage } from './pages/MsghistoryHomePage.tsx';
 import { ChannelsListPage } from './pages/ChannelsListPage.tsx';
 import { ChannelDetailPage } from './pages/ChannelDetailPage.tsx';
-import { dest_root } from './config/tauri_config';
-
-
 
 const MainLayout = () => (
     <>
@@ -17,16 +14,18 @@ const MainLayout = () => (
 );
 
 function App() {
+    // Используем HashRouter для нативного приложения, чтобы избежать проблем с путями
+    // basename не нужен, так как мы работаем в файловой системе или локальном протоколе
     return (
-       <BrowserRouter basename={dest_root}> 
+       <HashRouter> 
             <Routes>
                 <Route path="/" element={<MsghistoryHomePage />} />
                 <Route element={<MainLayout />}>
-                <Route path="/channels" element={<ChannelsListPage />} />
-                <Route path="/channel/:id" element={<ChannelDetailPage />} />
+                    <Route path="/channels" element={<ChannelsListPage />} />
+                    <Route path="/channel/:id" element={<ChannelDetailPage />} />
                 </Route>
             </Routes>
-        </BrowserRouter>
+        </HashRouter>
     );
 }
 

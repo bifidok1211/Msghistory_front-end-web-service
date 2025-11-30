@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "identifier": "org.msghistory.desktop",
   "build": {
-    "frontendDist": "../dist",
+    "beforeBuildCommand": "npm run build:tauri",
+    "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:3000",
-    "beforeDevCommand": "npm run dev", 
-    "beforeBuildCommand": "npm run build:tauri"
+    "frontendDist": "../dist"
   },
   "app": {
     "windows": [
@@ -24,6 +24,7 @@
   },
   "bundle": {
     "active": true,
+    "targets": "deb",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",

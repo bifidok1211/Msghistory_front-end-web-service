@@ -1,30 +1,40 @@
 .home-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: calc(100vh - 110px);
-    padding: 40px 20px;
-  }
-  
-  .home-content {
-    text-align: center;
-    max-width: 800px;
-  }
-  
-  .home-description {
-    font-size: 18px;
-    line-height: 1.6;
-    color: #333;
-    margin: 20px 0 40px;
-  }
-  
-  .page-title {
-    margin: 10px 0 8px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 24px;
-    color: #000;
-  }
-  
- 
-  
+  position: relative;               /* чтобы абсолютные элементы позиционировались внутри */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 110px);
+  padding: 40px 20px;
+  overflow: hidden;                 /* скрываем края видео */
+}
+
+.home-video-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;                /* растянуть как фон */
+  z-index: -1;                      /* за контентом */
+}
+
+.home-content {
+  text-align: center;
+  max-width: 800px;
+  color: black;          /* ← теперь текст чёрный */
+  position: relative;
+  z-index: 2;
+}
+
+
+.home-description {
+  font-size: 18px;
+  line-height: 1.6;
+  margin: 20px 0 40px;
+}
+
+.page-title {
+  margin: 10px 0 8px;
+  font-weight: 600;
+  font-size: 24px;
+}
