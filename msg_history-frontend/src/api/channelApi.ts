@@ -1,7 +1,15 @@
 import type { IPaginatedChannels, IChannel, ICartBadge} from '../types';
 import { CHANNELS_MOCK } from './mock';
 
-const API_PREFIX = '/api';
+const isTauri = import.meta.env.VITE_TARGET === 'tauri';
+const BACKEND_IP = 'http://10.11.207.23:8090'; 
+const API_PREFIX = isTauri ? `${BACKEND_IP}/api` : '/api';
+
+const MINIO_IP = 'http://10.11.207.23:9000'; 
+export const IMAGE_BASE_URL = isTauri ? `${MINIO_IP}/images/tg_channels` : 'http://localhost:9000/images/tg_channels';
+
+
+
 
 // Получение списка каналов с фильтраией по названию
 export const getChannels = async (title: string): Promise<IPaginatedChannels> => {

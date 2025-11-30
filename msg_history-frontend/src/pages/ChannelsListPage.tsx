@@ -6,8 +6,11 @@ import { setSearchTerm, selectSearchTerm } from '../store/slices/filterSlice';
 import type { AppDispatch } from '../store';
 import type { IChannel, ICartBadge} from '../types';
 import './styles/ChannelsListPage.css';
+import {IMAGE_BASE_URL} from '../api/channelApi'
 
-const cartImage = `/mock_images/cart.png`;
+const DefaultChannelImage = `/mock_images/default.png`;
+
+
 
 export const ChannelsListPage = () => {
     const [channels, setChannels] = useState<IChannel[]>([]);
@@ -44,7 +47,7 @@ export const ChannelsListPage = () => {
     };
 
     const isCartActive = cartBadge.count > 0 && cartBadge.msghistory_id !== null;
-
+    
     return (
         <>
 
@@ -88,11 +91,16 @@ export const ChannelsListPage = () => {
                 <div className="container channels-grid">
                     {channels.map(channel => (
                         <div key={channel.id} className="card card--vertical">
-                            <img 
+                           <img 
                                 className="card-img" 
-                                src={channel.image || cartImage} 
+                                // --- ИЗМЕНЕНИЕ 3: ВСТАВЛЯЕМ ПРАВИЛЬНУЮ ЛОГИКУ ЗДЕСЬ ---
+                                // Если у канала есть картинка, строим полный URL, иначе - показываем картинку по умолчанию
+                                src={channel.image ? `${IMAGE_BASE_URL}/${channel.image}` : DefaultChannelImage} 
                                 alt={channel.title}
+                                // --- ИЗМЕНЕНИЕ 4: Добавим обработчик ошибок для надежности ---
+                                onError={(e) => { (e.target as HTMLImageElement).src = DefaultChannelImage; }}
                             />
+
                             <div className="card-content">
                                 <p className="card-title">{channel.title}</p>
                                 
