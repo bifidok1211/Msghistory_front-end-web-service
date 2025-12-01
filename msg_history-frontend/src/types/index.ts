@@ -24,4 +24,13 @@ export interface IChannel {
   }
   export interface FilterState {
     searchTerm: string;
+  }
+  export interface BreadcrumbsProps {
+  crumbs: ICrumb[];
 }
+
+export interface ChannelCardProps {
+    channel: IChannel;
+}
+
+
