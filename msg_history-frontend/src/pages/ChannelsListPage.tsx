@@ -110,13 +110,6 @@ export const ChannelsListPage = () => {
                                 >
                                     Подробнее
                                 </Link>
-                                
-                                <button 
-                                    className="card-button" 
-                                    type="button"
-                                >
-                                    Добавить
-                                </button>
                             </div>
                         </div>
                     ))}
