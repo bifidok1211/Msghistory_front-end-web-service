@@ -1,8 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react'; // Добавили useState
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchChannels } from '../store/slices/channelsSlice';
-import { fetchCartBadge, addChannelToDraft } from '../store/slices/cartSlice'; // Добавили экшен добавления
+import { fetchCartBadge, addChannelToDraft } from '../store/slices/cartSlice';
 import { setSearchTerm, selectSearchTerm } from '../store/slices/filterSlice';
 import type { AppDispatch, RootState } from '../store';
 import './styles/ChannelsListPage.css';
@@ -13,24 +13,37 @@ export const ChannelsListPage = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
 
-    // Данные каналов и поиска
+    // Данные каналов
     const { items: channels, loading } = useSelector((state: RootState) => state.channels);
+    
+    // Глобальный поисковый запрос (тот, по которому идет запрос к API)
     const searchTerm = useSelector(selectSearchTerm);
     
+    // ЛОКАЛЬНОЕ состояние для инпута (то, что пользователь печатает прямо сейчас)
+    const [inputValue, setInputValue] = useState(searchTerm);
+
     // Данные корзины
     const { msghistory_id, count } = useSelector((state: RootState) => state.cart);
     
     // Данные пользователя для проверки авторизации 
     const { isAuthenticated } = useSelector((state: RootState) => state.user);
 
+    // Синхронизация: если searchTerm изменился извне (например, при очистке фильтров), обновляем инпут
+    useEffect(() => {
+        setInputValue(searchTerm);
+    }, [searchTerm]);
+
+    // Запрос данных идет только когда меняется searchTerm в Redux (т.е. после Submit)
     useEffect(() => {
         dispatch(fetchChannels(searchTerm));
         dispatch(fetchCartBadge());
     }, [dispatch, searchTerm]);
 
+    // Обработка отправки формы (Enter)
     const handleSearchSubmit = (event: React.FormEvent) => {
         event.preventDefault();
-        dispatch(fetchChannels(searchTerm));
+        // Только здесь мы обновляем Redux, что вызывает useEffect и загрузку данных
+        dispatch(setSearchTerm(inputValue));
     };
 
     const handleCartClick = (e: React.MouseEvent) => {
@@ -39,7 +52,6 @@ export const ChannelsListPage = () => {
             navigate(`/msghistory/${msghistory_id}`);
         }
     };
-
     
     const handleAdd = (channelId: number) => {
         dispatch(addChannelToDraft(channelId));
@@ -57,8 +69,8 @@ export const ChannelsListPage = () => {
                         className="search-input" 
                         type="search"
                         placeholder="Введите название канала для поиска..."
-                        value={searchTerm}
-                        onChange={(e) => dispatch(setSearchTerm(e.target.value))}
+                        value={inputValue} // Привязали к локальному стейту
+                        onChange={(e) => setInputValue(e.target.value)} // Обновляем только локальный стейт
                     />
                 </form>
 
@@ -115,11 +127,16 @@ export const ChannelsListPage = () => {
                                         Подробнее
                                     </Link>
 
-                                    {/* Логика из образца FactorCard: кнопка "Добавить" только для авторизованных */}
+                                    {/* Кнопка "Добавить" только для авторизованных */}
                                     {isAuthenticated && (
                                         <button 
                                             className="card-button tg-btn"
                                             onClick={() => handleAdd(channel.id)}
+                                            style={{ 
+                                                backgroundColor: '#fff', 
+                                                color: '#24A1DE', 
+                                                border: '2px solid #24A1DE' 
+                                            }}
                                         >
                                             Добавить
                                         </button>

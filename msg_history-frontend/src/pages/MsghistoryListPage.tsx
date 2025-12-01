@@ -9,7 +9,6 @@ import { AppNavbar } from '../components/Navbar';
 // Хелпер для статусов
 const getStatusBadge = (status: number | undefined) => {
     switch (status) {
-        case 1: return <Badge bg="secondary">Черновик</Badge>;
         case 2: return <Badge bg="dark">Удалена</Badge>;
         case 3: return <Badge style={{ backgroundColor: '#24A1DE' }}>Сформирована</Badge>;
         case 4: return <Badge bg="success">Завершена</Badge>;
@@ -83,7 +82,6 @@ export const MsghistoryListPage = () => {
                                     style={{ border: '1px solid #E1E5EA', borderRadius: '8px' }}
                                 >
                                     <option value="all">Любой статус</option>
-                                    <option value="1">Черновик</option>
                                     <option value="3">Сформирована</option>
                                     <option value="4">Завершена</option>
                                     <option value="5">Отклонена</option>
