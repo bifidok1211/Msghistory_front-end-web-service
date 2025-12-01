@@ -22,3 +22,6 @@ export interface IChannel {
       msghistory_id: number | null;
       count: number;
   }
+  export interface FilterState {
+    searchTerm: string;
+}
