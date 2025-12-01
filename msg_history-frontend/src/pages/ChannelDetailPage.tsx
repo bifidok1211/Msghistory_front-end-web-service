@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getChannelById } from '../api/channelApi';
-import type { IChannel } from '../types';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchChannelById, clearCurrentChannel } from '../store/slices/channelsSlice';
+import type { AppDispatch, RootState } from '../store';
 import { CustomBreadcrumbs } from '../components/Breadcrumbs';
 import './styles/ChannelDetailPage.css';
 
@@ -9,19 +10,19 @@ export const DefaultImage = '/mock_images/default.png';
 
 export const ChannelDetailPage = () => {
     const { id } = useParams<{ id: string }>();
-    const [channel, setChannel] = useState<IChannel | null>(null);
-    const [loading, setLoading] = useState(true);
+    const dispatch = useDispatch<AppDispatch>();
+    
+    // Только получение данных о канале
+    const { currentChannel: channel, loading } = useSelector((state: RootState) => state.channels);
 
     useEffect(() => {
         if (id) {
-            setLoading(true);
-            getChannelById(id)
-                .then(data => setChannel(data))
-                .finally(() => setLoading(false));
+            dispatch(fetchChannelById(id));
         }
-    }, [id]);
-
-    const displayImage = channel?.image || DefaultImage;
+        return () => {
+            dispatch(clearCurrentChannel());
+        };
+    }, [id, dispatch]);
 
     if (loading) {
         return (
@@ -33,9 +34,9 @@ export const ChannelDetailPage = () => {
 
     if (!channel) {
         return (
-            <div className="container">
+            <div className="container" style={{ textAlign: 'center', marginTop: '40px' }}>
                 <div className="page-title">Канал не найден</div>
-                <Link to="/" className="card-button tg-btn">
+                <Link to="/channels" className="card-button tg-btn">
                     Вернуться к списку
                 </Link>
             </div>
@@ -47,9 +48,11 @@ export const ChannelDetailPage = () => {
         { label: channel.title, active: true },
     ];
 
+    const displayImage = channel.image || DefaultImage;
+
     return (
         <>
-            <div style={{ padding: '20px 0' }}>
+            <div style={{ padding: '20px 0'}}>
                 <CustomBreadcrumbs crumbs={breadcrumbs} />
             </div>
 

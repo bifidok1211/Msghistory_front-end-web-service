@@ -1,0 +1,44 @@
+/* Адаптация под стиль Telegram/Msghistory */
+
+/* Фон страниц авторизации и профиля - светло-серый, как фон чатов */
+.background-color-profile,
+.background-color-login,
+.background-color-register {
+    width: 100%;
+    min-height: 100vh;
+    background-color: #F2F4F6 !important; 
+    /* Компенсация отступа футера, если он есть, аналогично образцу */
+    margin-bottom: -30px; 
+    padding-top: 70px; /* Чтобы не наезжало на navbar */
+    box-sizing: border-box;
+}
+
+/* Переопределение цветов Bootstrap под Telegram Blue (#24A1DE) */
+.text-tg {
+    color: #24A1DE !important;
+}
+
+.text-tg:hover {
+    color: #1c88bd !important;
+    text-decoration: underline;
+}
+
+/* Кнопки в стиле Telegram */
+.btn-tg-primary {
+    background-color: #24A1DE !important;
+    border-color: #24A1DE !important;
+    color: #fff !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-tg-primary:hover,
+.btn-tg-primary:active {
+    background-color: #1c88bd !important;
+    border-color: #1c88bd !important;
+}
+
+/* Поля ввода при фокусе */
+.form-control:focus {
+    border-color: #24A1DE !important;
+    box-shadow: 0 0 0 0.25rem rgba(36, 161, 222, 0.25) !important;
+}
