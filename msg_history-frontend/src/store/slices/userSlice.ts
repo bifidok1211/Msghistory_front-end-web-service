@@ -17,9 +17,11 @@ interface UserState {
 }
 
 const initialState: UserState = {
+    // При инициализации мы можем попытаться достать токен, 
+    // но user теперь всегда null при старте (пока не загрузим профиль)
     user: null, 
-    token: null,
-    isAuthenticated: false,
+    token: localStorage.getItem('authToken'), // Можно сразу инициализировать токен, если он есть
+    isAuthenticated: !!localStorage.getItem('authToken'),
     registerSuccess: false,
     loading: false,
     error: null,
@@ -33,12 +35,16 @@ export const loginUser = createAsyncThunk(
             const response = await api.auth.loginCreate(credentials);
             const data = response.data;
 
-            if (data.token) localStorage.setItem('authToken', data.token);
-            if (data.user) localStorage.setItem('userInfo', JSON.stringify(data.user));
+            // СОХРАНЯЕМ ТОЛЬКО ТОКЕН
+            if (data.token) {
+                localStorage.setItem('authToken', data.token);
+            }
+            
+            // УБРАЛИ СОХРАНЕНИЕ USERINFO В LOCALSTORAGE
+            // if (data.user) localStorage.setItem('userInfo', JSON.stringify(data.user)); <--- Удалено
 
             return data;
         } catch (error) {
-            // Исправление: приводим к any, чтобы прочитать свойства response
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const err = error as any;
             const backendError = err.response?.data?.description || '';
@@ -64,7 +70,6 @@ export const registerUser = createAsyncThunk(
         try {
             const response = await api.users.usersCreate(credentials);
             return response.data; 
-            
         } catch (error) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const err = error as any;
@@ -80,11 +85,12 @@ export const logoutUser = createAsyncThunk(
         try {
             await api.auth.logoutCreate();
         } catch {
-            // Исправление: убрали (error), так как переменная не используется
             console.warn('Logout failed on backend, clearing local anyway');
         } finally {
+            // Очищаем только токен
             localStorage.removeItem('authToken');
-            localStorage.removeItem('userInfo');
+            
+            // localStorage.removeItem('userInfo'); // <--- Больше не нужно, так как мы его не храним
         }
     }
 );
@@ -95,10 +101,10 @@ export const fetchUserProfile = createAsyncThunk(
     async (id: number, { rejectWithValue }) => {
         try {
             const response = await api.users.usersDetail(id);
-            localStorage.setItem('userInfo', JSON.stringify(response.data));
+            // УБРАЛИ СОХРАНЕНИЕ
+            // localStorage.setItem('userInfo', JSON.stringify(response.data)); 
             return response.data;
         } catch {
-            // Исправление: переменная error не используется
             return rejectWithValue('Не удалось загрузить профиль');
         }
     }
@@ -141,6 +147,7 @@ const userSlice = createSlice({
                 state.loading = false;
                 state.isAuthenticated = true;
                 state.token = action.payload.token || null;
+                // Данные пользователя кладем только в Redux State
                 state.user = action.payload.user || null;
             })
             .addCase(loginUser.rejected, (state, action) => {
@@ -186,7 +193,8 @@ const userSlice = createSlice({
                     if (action.payload.full_name) state.user.full_name = action.payload.full_name;
                     if (action.payload.username) state.user.username = action.payload.username;
                 }
-                localStorage.setItem('userInfo', JSON.stringify(state.user));
+                // УБРАЛИ СОХРАНЕНИЕ
+                // localStorage.setItem('userInfo', JSON.stringify(state.user));
             });
     },
 });
