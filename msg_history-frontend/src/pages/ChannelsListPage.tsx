@@ -7,7 +7,7 @@ import type { AppDispatch } from '../store';
 import type { IChannel, ICartBadge} from '../types';
 import './styles/ChannelsListPage.css';
 
-const cartImage = `/mock_images/cart.png`;
+const DeafaultImage = `/mock_images/cart.png`;
 
 export const ChannelsListPage = () => {
     const [channels, setChannels] = useState<IChannel[]>([]);
@@ -90,7 +90,7 @@ export const ChannelsListPage = () => {
                         <div key={channel.id} className="card card--vertical">
                             <img 
                                 className="card-img" 
-                                src={channel.image || cartImage} 
+                                src={channel.image || DeafaultImage} 
                                 alt={channel.title}
                             />
                             <div className="card-content">

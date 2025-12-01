@@ -90,3 +90,109 @@
     color: #7A7A7A !important;
   }
   
+  /* ==========================================
+     АДАПТИВНОСТЬ
+     ========================================== */
+  
+  /* Планшеты и небольшие ноутбуки (до 1024px) */
+  @media (max-width: 1024px) {
+    .card--onechannel {
+      width: 100% !important;
+      max-width: 100% !important;
+      padding: 20px 24px 16px 24px !important;
+      grid-template-columns: 220px 1fr !important;
+      column-gap: 16px !important;
+    }
+  
+    .card--onechannel .card-footer {
+      grid-template-columns: 160px 120px 1fr !important;
+    }
+  }
+  
+  /* Мобильные устройства (до 768px) */
+  @media (max-width: 768px) {
+    .loading-spinner {
+      margin-top: 24px !important;
+      font-size: 16px !important;
+    }
+  
+    .card--onechannel {
+      width: 100% !important;
+      max-width: 100% !important;
+      padding: 16px 16px 14px 16px !important;
+      grid-template-columns: 1fr !important;
+      grid-template-rows: auto auto auto !important;
+      row-gap: 12px !important;
+      justify-items: center !important;
+    }
+  
+    .card--onechannel .card-img {
+      grid-column: 1 !important;
+      grid-row: 1 !important;
+      margin-bottom: 4px !important;
+    }
+  
+    .card--onechannel .card-body {
+      grid-column: 1 !important;
+      grid-row: 2 !important;
+      width: 100% !important;
+      align-items: flex-start !important;
+    }
+  
+    .card--onechannel .card-text {
+      font-size: 18px !important;
+    }
+  
+    .card--onechannel .card-footer {
+      grid-column: 1 !important;
+      grid-row: 3 !important;
+      width: 100% !important;
+      grid-template-columns: 1fr 1fr !important;
+      grid-template-rows: auto auto !important;
+      row-gap: 6px !important;
+    }
+  
+    .card--onechannel .card-name {
+      grid-column: 1 / -1 !important;
+      width: 100% !important;
+    }
+  
+    .card--onechannel .card-subs {
+      grid-column: 1 / -1 !important;
+      text-align: center !important;
+      font-size: 16px !important;
+    }
+  }
+  
+  /* Очень маленькие экраны (до 480px) */
+  @media (max-width: 480px) {
+    .card--onechannel {
+      padding: 14px 12px 12px 12px !important;
+      row-gap: 10px !important;
+    }
+  
+    .card--onechannel .card-img {
+      width: 140px !important;
+      height: 140px !important;
+      max-width: 140px !important;
+      max-height: 140px !important;
+    }
+  
+    .card--onechannel .card-text {
+      font-size: 16px !important;
+    }
+  
+    .card--onechannel .card-name {
+      font-size: 16px !important;
+    }
+  
+    .card--onechannel .card-subs {
+      font-size: 15px !important;
+    }
+  
+    .card--onechannel .card-footer {
+      grid-template-columns: 1fr !important;
+      justify-items: center !important;
+    }
+  }
+  
