@@ -4,7 +4,7 @@ import { getChannels, getCartBadge } from '../api/channelApi';
 import type { IChannel, ICartBadge } from '../types';
 import './styles/ChannelsListPage.css';
 
-export const DefaultImage = 'http://localhost:9000/images/tg_channels/default.png'
+export const DefaultImage = '/RIP_front-end/mock_images/default.png'
 
 export const ChannelsListPage = () => {
     const [channels, setChannels] = useState<IChannel[]>([]);
@@ -97,13 +97,6 @@ export const ChannelsListPage = () => {
                                 >
                                     Подробнее
                                 </Link>
-                                
-                                <button 
-                                    className="card-button" 
-                                    type="button"
-                                >
-                                    Добавить
-                                </button>
                             </div>
                         </div>
                     ))}

@@ -15,7 +15,7 @@ const MainLayout = () => (
 
 function App() {
     return (
-        <BrowserRouter>
+        <BrowserRouter basename="/RIP_front-end/">
             <Routes>
                 <Route path="/" element={<MsghistoryHomePage />} />
                 <Route element={<MainLayout />}>
