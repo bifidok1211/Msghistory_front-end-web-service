@@ -22,7 +22,12 @@ export const getChannels = async (title: string): Promise<IPaginatedChannels> =>
         if (!response.ok) {
             throw new Error('Backend is not available');
         }
-    const data = await response.json();
+    const data: IPaginatedChannels = await response.json();
+    for (let i =0; i < data.total; i++){
+        data.items[i].image = data.items[i].image?.replace('http://localhost:9000/images/tg_channels/', '')
+        
+    }
+
     return {
         items: data.items || [],
         total: data.total || 0
@@ -43,8 +48,10 @@ export const getChannelById = async (id: string): Promise<IChannel | null> => {
         if (!response.ok) {
             throw new Error('Backend is not available');
         }
-        return await response.json();
-    } catch (error) {
+        const data = await response.json();
+        data.image = data.image?.replace('http://localhost:9000/images/tg_channels/', '');
+        return data;
+    }catch (error) {
         console.warn(`Failed to fetch channel ${id}, using mock data.`, error);
         const channel = CHANNELS_MOCK.items.find(f => f.id === parseInt(id));
         return channel || null;
