@@ -21,6 +21,9 @@ const MainLayout = () => (
 
 function App() {
 
+    // При загрузке страницы удаляем токены из хранилища.
+    // Так как в userSlice мы их больше не читаем при старте,
+    // конфликта (гонки) больше не будет. Интерфейс сразу будет "гостевым".
     useEffect(() => {
         localStorage.removeItem('authToken');
         localStorage.removeItem('userInfo');

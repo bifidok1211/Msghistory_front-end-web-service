@@ -17,11 +17,13 @@ interface UserState {
 }
 
 const initialState: UserState = {
-    // При инициализации мы можем попытаться достать токен, 
-    // но user теперь всегда null при старте (пока не загрузим профиль)
     user: null, 
-    token: localStorage.getItem('authToken'), // Можно сразу инициализировать токен, если он есть
-    isAuthenticated: !!localStorage.getItem('authToken'),
+    // ВАЖНОЕ ИЗМЕНЕНИЕ НИЖЕ:
+    // Мы ставим token: null и isAuthenticated: false.
+    // Мы НЕ читаем localStorage.getItem('authToken') здесь.
+    // Это заставит приложение считать юзера "гостем" при каждой перезагрузке.
+    token: null, 
+    isAuthenticated: false,
     registerSuccess: false,
     loading: false,
     error: null,
@@ -35,14 +37,12 @@ export const loginUser = createAsyncThunk(
             const response = await api.auth.loginCreate(credentials);
             const data = response.data;
 
-            // СОХРАНЯЕМ ТОЛЬКО ТОКЕН
+            // Мы сохраняем токен в localStorage ТОЛЬКО для axios-интерцептора (api/index.ts),
+            // чтобы запросы проходили, пока вкладка открыта.
             if (data.token) {
                 localStorage.setItem('authToken', data.token);
             }
             
-            // УБРАЛИ СОХРАНЕНИЕ USERINFO В LOCALSTORAGE
-            // if (data.user) localStorage.setItem('userInfo', JSON.stringify(data.user)); <--- Удалено
-
             return data;
         } catch (error) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -87,10 +87,7 @@ export const logoutUser = createAsyncThunk(
         } catch {
             console.warn('Logout failed on backend, clearing local anyway');
         } finally {
-            // Очищаем только токен
             localStorage.removeItem('authToken');
-            
-            // localStorage.removeItem('userInfo'); // <--- Больше не нужно, так как мы его не храним
         }
     }
 );
@@ -101,8 +98,6 @@ export const fetchUserProfile = createAsyncThunk(
     async (id: number, { rejectWithValue }) => {
         try {
             const response = await api.users.usersDetail(id);
-            // УБРАЛИ СОХРАНЕНИЕ
-            // localStorage.setItem('userInfo', JSON.stringify(response.data)); 
             return response.data;
         } catch {
             return rejectWithValue('Не удалось загрузить профиль');
@@ -147,7 +142,6 @@ const userSlice = createSlice({
                 state.loading = false;
                 state.isAuthenticated = true;
                 state.token = action.payload.token || null;
-                // Данные пользователя кладем только в Redux State
                 state.user = action.payload.user || null;
             })
             .addCase(loginUser.rejected, (state, action) => {
@@ -193,8 +187,6 @@ const userSlice = createSlice({
                     if (action.payload.full_name) state.user.full_name = action.payload.full_name;
                     if (action.payload.username) state.user.username = action.payload.username;
                 }
-                // УБРАЛИ СОХРАНЕНИЕ
-                // localStorage.setItem('userInfo', JSON.stringify(state.user));
             });
     },
 });
