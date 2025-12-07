@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Card, Form, Button, Spinner, Alert } from 'react-bootstrap';
+import { Container, Card, Form, Button, Spinner} from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerUser, clearError, resetRegisterSuccess } from '../store/slices/userSlice';
@@ -11,7 +11,7 @@ export const RegisterPage = () => {
     const [formData, setFormData] = useState({ full_name: '', username: '', password: '' });
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
-    const { loading, error, registerSuccess } = useSelector((state: RootState) => state.user);
+    const { loading, registerSuccess } = useSelector((state: RootState) => state.user);
 
     useEffect(() => {
         dispatch(clearError());
@@ -20,7 +20,6 @@ export const RegisterPage = () => {
 
     useEffect(() => {
         if (registerSuccess) {
-            alert("Регистрация успешна! Теперь войдите.");
             navigate('/login');
         }
     }, [registerSuccess, navigate]);
@@ -40,7 +39,6 @@ export const RegisterPage = () => {
                             <p className="text-muted">Создайте новый аккаунт</p>
                         </div>
 
-                        {error && <Alert variant="danger">{error}</Alert>}
 
                         <Form onSubmit={handleSubmit}>
                             <Form.Floating className="mb-3">

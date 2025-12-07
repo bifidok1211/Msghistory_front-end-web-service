@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Card, Form, Button, Spinner, Alert } from 'react-bootstrap';
+import { Container, Card, Form, Button, Spinner } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser, clearError } from '../store/slices/userSlice';
@@ -11,7 +11,7 @@ export const LoginPage = () => {
     const [formData, setFormData] = useState({ username: '', password: '' });
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
-    const { loading, error, isAuthenticated } = useSelector((state: RootState) => state.user);
+    const { loading, isAuthenticated } = useSelector((state: RootState) => state.user);
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -40,7 +40,6 @@ export const LoginPage = () => {
                             <p className="text-muted">Добро пожаловать в Msghistory</p>
                         </div>
 
-                        {error && <Alert variant="danger" className="text-center">{error}</Alert>}
 
                         <Form onSubmit={handleSubmit}>
                             <Form.Floating className="mb-3">

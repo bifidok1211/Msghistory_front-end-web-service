@@ -11,25 +11,22 @@
   }
   
   /* ====== ВЕРХНЯЯ ЗОНА: Описание (3/4) + Результат (1/4) ====== */
-  /* ширина синхронизирована с сеткой карточек ниже:
-     300 + 3*344 + 3*40  */
   .order-top {
     width: 100%;
-    max-width: calc(300px + 40px + 344px + 40px + 344px + 40px + 344px);
-    margin: 18px auto 8px;
+    max-width: 1200px;
+    margin: 18px auto 30px;
     display: grid;
-    grid-template-columns: 3fr 1fr; /* 3/4 : 1/4 */
-    gap: 40px;
+    grid-template-columns: 3fr 1fr;
+    gap: 30px;
   }
   
-  /* Левая панель — «Введите описание поста» */
   .post-desc {
       display: flex;
       flex-direction: column;
   }
   
   .post-desc__title {
-    margin: 0;
+    margin: 0 0 10px 0;
     font-weight: 600;
     font-size: 18px;
   }
@@ -49,10 +46,8 @@
     resize: vertical;
   }
   
-  /* Правая панель — «Результат» */
   .order-summary {
-    /* растянут по правой границе до общей вертикали с карточками */
-    padding: 24px 18px;                 /* чуть больше верх/низ, чтобы строки не липли */
+    padding: 24px 18px;
     display: flex;
     flex-direction: column;
   }
@@ -64,7 +59,7 @@
   }
   
   .order-summary__row {
-    margin: 14px 0;                     /* равномерно распределяем визуально */
+    margin: 14px 0;
     font-size: 16px;
     display: flex;
     justify-content: space-between;
@@ -73,93 +68,163 @@
   
   .order-summary__value { font-weight: 400; font-size: 16px; color: #444; }
   
-  /* ====== СПИСОК строк анализа (каждая строка — одна «карточка» из 4 колонок) ====== */
+  /* ====== СПИСОК (ОБНОВЛЕННЫЙ ДИЗАЙН) ====== */
+  .analysis-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto 30px;
+  }
+
+  /* Шапка таблицы */
+  .list-header {
+      display: grid;
+      /* Сетка: Канал (тянется), Подписчики, Просмотры, Репосты, Кнопки (фикс) */
+      grid-template-columns: 2fr 1fr 1fr 1fr 160px;
+      gap: 20px;
+      padding: 0 24px 10px 24px;
+      /* border-bottom: 2px solid #E1E5EA; Удалим линию, так как карточки теперь объемные и отделены от шапки */
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #666;
+      font-size: 14px;
+  }
+
   .analysis-list {
-    width: 100%;
-    max-width: calc(300px + 40px + 344px + 40px + 344px + 40px + 344px);
-    margin: 24px auto;
     display: grid;
-    gap: 28px; /* вертикальный отступ между строками */
+    gap: 24px; /* Чуть больше отступ между объемными карточками */
   }
   
-  /* Панель строки */
+  /* Панель строки - ТЕПЕРЬ С ОБЪЕМОМ КАК У ВЕРХНИХ ПАНЕЛЕЙ */
   .analysis-row {
-    position: relative;
-    background: #F5F5F5;
+    background: #F5F5F5; /* Серый фон как у панелей */
     border: 1px solid #E1E5EA;
-    border-radius: 12px;
-    box-shadow: 10px 10px 0 #D9D9D9;
-    padding: 24px;
+    border-radius: 12px; /* Скругление как у панелей */
+    box-shadow: 10px 10px 0 #D9D9D9; /* Тень-объем */
+    padding: 20px 24px;
     box-sizing: border-box;
   
     display: grid;
-    grid-template-columns: 300px 344px 344px 344px; /* 4 колонки */
-    column-gap: 40px;                                 /* «поля» между колонками */
+    grid-template-columns: 2fr 1fr 1fr 1fr 160px; /* Совпадает с шапкой */
+    gap: 20px;
+    align-items: center;
     transition: transform .12s ease;
   }
   
-  .analysis-row:hover { transform: translateY(-4px); }
-  
-  /* Колонки + вертикальные разделители (3 шт.) */
-  .analysis-col { position: relative; }
-  
-  /* Используем псевдоэлемент для разделителя, кроме последнего элемента */
-  .analysis-col:not(:last-child)::after {
-    content: "";
-    position: absolute;
-    top: 0; bottom: 0;
-    right: -20px;                /* центр 40px-зазора */
-    width: 1px;
-    background: #E1E5EA;
+  .analysis-row:hover { 
+      transform: translateY(-2px); 
+      /* Тень оставляем жесткой, чтобы не ломать стиль объема */
   }
   
-  /* Левая колонка — плитка канала */
-  .analysis-col--channel {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    text-align: center;
+  /* Колонки */
+  .analysis-col {
+      display: flex;
+      align-items: center;
   }
   
-  .channel-img {
-    width: 160px; height: 160px; object-fit: cover; border-radius: 10px;
-    background: #fff; box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
+  /* Колонка с информацией о канале */
+  .analysis-col--info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+  }
+
+  .channel-img-small {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #fff; /* Белый фон под картинкой для контраста с серой карточкой */
+      border: 1px solid #E1E5EA;
+  }
+
+  .channel-title-row {
+      font-weight: 600;
+      font-size: 16px;
+      color: #000;
+      line-height: 1.2;
+  }
+
+  /* Центрирование текста в колонках */
+  .text-center {
+      justify-content: center;
+  }
+
+  .metrics-value-row {
+      font-size: 16px;
+      font-weight: 500;
+      color: #333;
+  }
+
+  /* Инпуты */
+  .metrics-input-row {
+      width: 100px;
+      padding: 8px 10px;
+      background: #fff; /* Белый фон инпута на серой карточке */
+      border: 1px solid #E1E5EA;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
   }
   
-  .channel-title {
-    margin: 14px 0 10px 0;
-    font-family: "Open Sans", Arial, sans-serif;
-    font-size: 18px; font-weight: 600; color: #000;
+  .metrics-input-row:focus {
+      border-color: #24A1DE;
+  }
+
+  /* Колонка действий (вертикальный стек кнопок) */
+  .analysis-col--actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      justify-content: center;
+  }
+
+  /* Кнопки действий */
+  .action-btn {
+      width: 100%;
+      padding: 6px 0;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: opacity 0.2s;
   }
   
-  /* Текстовые/полевая колонки */
-  .metrics-label { font-size: 18px; color: #222; margin: 6px 0 10px; }
-  .metrics-value { font-size: 20px; font-weight: 600; color: #222; }
-  
-  .metrics-input {
-    width: 100%;
-    padding: 12px 14px;
-    background: #fff;
-    border: 1px solid #E1E5EA;
-    border-radius: 10px;
-    outline: none;
-    font-size: 16px;
-    box-sizing: border-box;
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
+  .action-btn:hover {
+      opacity: 0.9;
+      color: #fff;
+  }
+
+  /* Цвета кнопок */
+  .btn-details {
+      background-color: #24A1DE; 
+      color: #fff;
   }
   
-  /* ====== КНОПКИ ДЕЙСТВИЙ (НИЗ) ====== */
+  .btn-save {
+      background-color: #24A1DE; 
+      color: #fff;
+  }
+  
+  .btn-delete {
+      background-color: #DC3545; 
+      color: #fff;
+  }
+
+  /* ====== КНОПКИ ДЕЙСТВИЙ СТРАНИЦЫ (НИЗ) ====== */
   .tg-actions-row {
     width: 100%;
-    max-width: calc(300px + 40px + 344px + 40px + 344px + 40px + 344px);
+    max-width: 1200px;
     margin: 0 auto 40px;
     display: flex;
-    justify-content: space-between; /* Разнесем кнопки по краям */
+    justify-content: space-between;
     gap: 20px;
   }
   
-  /* Маленькая кнопка сохранения внутри панелей */
   .save-mini-btn {
       background: #24A1DE;
       color: #fff;
@@ -170,33 +235,72 @@
       cursor: pointer;
       transition: background 0.2s;
   }
-  .save-mini-btn:hover {
-      background: #1b8ec6;
-  }
+  
+  /* ==========================================
+     АДАПТИВНОСТЬ (Mobile & Tablet)
+     ========================================== */
 
-  /* Адаптивность для мобильных (Grid -> Flex column) */
-  @media (max-width: 1200px) {
+  /* Планшеты и маленькие ноутбуки (до 1024px) */
+  @media (max-width: 1024px) {
       .order-top {
-          max-width: 100%;
-          grid-template-columns: 1fr;
           padding: 0 20px;
       }
-      .analysis-list, .tg-actions-row {
-          max-width: 100%;
+      .analysis-container, .tg-actions-row {
           padding: 0 20px;
+          box-sizing: border-box;
       }
-      .analysis-row {
-          grid-template-columns: 1fr 1fr;
-          row-gap: 20px;
-          height: auto;
-      }
-      .analysis-col::after {
+
+      /* Скрываем шапку таблицы, переходим на карточный вид */
+      .list-header { 
           display: none; 
       }
+      
+      .analysis-row {
+          /* Одна колонка */
+          grid-template-columns: 1fr; 
+          gap: 16px;
+          text-align: center;
+          padding: 20px;
+      }
+      
+      .analysis-col {
+          justify-content: center;
+          width: 100%;
+      }
+      
+      .analysis-col--info {
+          flex-direction: column; /* Картинка сверху, название снизу */
+      }
+      
+      .metrics-input-row {
+          width: 100%;
+          max-width: 300px; /* Растягиваем инпуты, но не бесконечно */
+      }
+      
+      /* Кнопки действий в ряд на планшете */
+      .analysis-col--actions {
+          flex-direction: row; 
+          gap: 10px;
+      }
   }
 
+  /* Мобильные устройства (до 768px) */
   @media (max-width: 768px) {
-    .analysis-row {
-        grid-template-columns: 1fr;
-    }
+      .order-top {
+          grid-template-columns: 1fr; /* Описание и Результат друг под другом */
+          gap: 20px;
+      }
+
+      .analysis-col--actions {
+          flex-direction: column; /* Кнопки действий друг под другом на телефоне */
+      }
+
+      .tg-actions-row {
+          flex-direction: column; /* Главные кнопки ("Удалить пост", "Сформировать") друг под другом */
+          align-items: center;
+      }
+
+      .tg-actions-row .card-button {
+          width: 100%; /* Кнопки на всю ширину */
+      }
   }

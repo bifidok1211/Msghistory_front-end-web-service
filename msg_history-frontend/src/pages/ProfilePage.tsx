@@ -35,9 +35,7 @@ export const ProfilePage = () => {
             .then(() => {
                 setIsEditing(false);
                 setEditData(prev => ({ ...prev, password: '' }));
-                alert('Профиль обновлен!');
             })
-            .catch((err) => alert(`Ошибка: ${err}`));
         }
     };
 

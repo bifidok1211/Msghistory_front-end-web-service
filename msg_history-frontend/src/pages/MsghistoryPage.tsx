@@ -26,14 +26,9 @@ export const MsghistoryPage = () => {
     
     const { currentMsghistory, loading, operationSuccess } = useSelector((state: RootState) => state.msghistory);
     
-    // Локальный стейт для описания поста
     const [description, setDescription] = useState('');
-    
-    // Локальный стейт для полей каналов (views, repost_level)
-    // Ключ - channel_id, Значение - объект с данными
     const [channelsData, setChannelsData] = useState<{[key: number]: { views: number, repost_level: number }}>({});
 
-    // 1. Загрузка данных
     useEffect(() => {
         if (id) {
             dispatch(fetchMsghistoryById(id));
@@ -44,7 +39,6 @@ export const MsghistoryPage = () => {
         }
     }, [id, dispatch]);
 
-    // 2. Синхронизация Redux -> Local State
     useEffect(() => {
         if (currentMsghistory) {
             setDescription(currentMsghistory.description || '');
@@ -62,7 +56,6 @@ export const MsghistoryPage = () => {
         }
     }, [currentMsghistory]);
 
-    // Экран успеха (если удалили или сформировали)
     if (operationSuccess) {
         return (
             <>
@@ -91,15 +84,11 @@ export const MsghistoryPage = () => {
 
     const isDraft = currentMsghistory.status === STATUS_DRAFT;
     
-    // Хлебные крошки
     const breadcrumbs = [
         { label: 'Мои заявки', path: '/msghistory' },
         { label: `Заявка №${currentMsghistory.id}`, active: true },
     ];
 
-    // --- Обработчики ---
-
-    // Сохранение описания поста
     const handleSaveDescription = () => {
         if (currentMsghistory.id) {
             dispatch(updateMsghistoryFields({
@@ -107,12 +96,9 @@ export const MsghistoryPage = () => {
                 data: { description }
             }))
             .unwrap()
-            .then(() => alert("Описание сохранено!"))
-            .catch(() => alert("Ошибка сохранения"));
         }
     };
 
-    // Изменение инпутов канала локально
     const handleChannelChange = (cId: number, field: 'views' | 'repost_level', value: string) => {
         const numVal = parseFloat(value) || 0;
         setChannelsData(prev => ({
@@ -124,7 +110,6 @@ export const MsghistoryPage = () => {
         }));
     };
 
-    // Сохранение данных конкретного канала
     const handleSaveChannel = (cId: number) => {
         if (currentMsghistory.id && channelsData[cId]) {
             dispatch(updateChannelInMsghistory({
@@ -136,32 +121,31 @@ export const MsghistoryPage = () => {
                 }
             }))
             .unwrap()
-            .then(() => alert("Данные канала сохранены"))
-            .catch(() => alert("Ошибка сохранения"));
         }
     };
 
-    // Удаление канала
     const handleRemoveChannel = (cId: number) => {
         if (window.confirm("Убрать канал из списка?")) {
             dispatch(removeChannelFromMsghistory({
                 msghistoryId: currentMsghistory.id!,
                 channelId: cId
-            }));
+            }))
+            .unwrap()
+            .then(() => console.log("Канал удален из заявки"));
         }
     };
 
-    // Сформировать
     const handleSubmitOrder = () => {
         if (currentMsghistory.id) {
-            dispatch(submitMsghistory(currentMsghistory.id));
+            dispatch(submitMsghistory(currentMsghistory.id))
+                .unwrap()
         }
     };
 
-    // Удалить пост целиком
     const handleDeleteOrder = () => {
         if (currentMsghistory.id && window.confirm('Вы точно хотите удалить этот пост?')) {
-            dispatch(deleteMsghistory(currentMsghistory.id));
+            dispatch(deleteMsghistory(currentMsghistory.id))
+                .unwrap()
         }
     };
 
@@ -175,9 +159,8 @@ export const MsghistoryPage = () => {
 
             <div className="page-title">Анализ поста</div>
 
-            {/* ВЕРХНЯЯ ЗОНА: Описание + Результат */}
+            {/* ВЕРХНЯЯ ЗОНА */}
             <div className="order-top">
-                {/* 3/4: Введите описание поста */}
                 <div className="post-desc panel">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                         <p className="post-desc__title">Описание поста:</p>
@@ -197,7 +180,6 @@ export const MsghistoryPage = () => {
                     />
                 </div>
             
-                {/* 1/4: Результат */}
                 <div className="order-summary panel">
                     <p className="order-summary__title">Результат</p>
                     
@@ -227,83 +209,89 @@ export const MsghistoryPage = () => {
                 </div>
             </div>
 
-            {/* СПИСОК «строк-панелей» анализа */}
-            <div className="analysis-list">
-                {currentMsghistory.channels?.map(item => {
-                    const cId = item.channel_id!;
-                    const localData = channelsData[cId] || { views: 0, repost_level: 0 };
-                    
-                    return (
-                        <div className="analysis-row" key={cId}>
-                            {/* Колонка 1 — канал */}
-                            <div className="analysis-col analysis-col--channel">
-                                <img className="channel-img" src={item.image || DefaultImage} alt={item.title} />
-                                <p className="channel-title">{item.title}</p>
-                                <Link className="tg-btn" to={`/channel/${cId}`} style={{ width: '140px', fontSize: '14px', height: '36px', lineHeight: '36px' }}>Перейти</Link>
-                                
-                                {isDraft && (
-                                    <button 
-                                        className="text-danger-link" 
-                                        onClick={() => handleRemoveChannel(cId)}
-                                        style={{ marginTop: '10px', background: 'none', border: 'none', color: '#d9534f', fontSize: '13px', cursor: 'pointer' }}
-                                    >
-                                        Убрать из списка
-                                    </button>
-                                )}
-                            </div>
+            {/* НОВАЯ ТАБЛИЦА С КАРТОЧКАМИ */}
+            <div className="analysis-container">
+                
+                {/* ШАПКА ТАБЛИЦЫ */}
+                <div className="list-header">
+                    <div className="header-col">Канал</div>
+                    <div className="header-col text-center">Подписчики</div>
+                    <div className="header-col text-center">Просмотры</div>
+                    <div className="header-col text-center">Уровень репоста</div>
+                    <div className="header-col text-center" style={{width: '160px'}}>Действия</div>
+                </div>
 
-                            {/* Колонка 2 — подписчики (число) */}
-                            <div className="analysis-col">
-                                <div className="metrics-label">Количество подписчиков:</div>
-                                <div className="metrics-value">
-                                    {item.subscribers || '-'}
+                <div className="analysis-list">
+                    {currentMsghistory.channels?.map(item => {
+                        const cId = item.channel_id!;
+                        const localData = channelsData[cId] || { views: 0, repost_level: 0 };
+                        
+                        return (
+                            <div className="analysis-row" key={cId}>
+                                {/* Колонка 1: Канал */}
+                                <div className="analysis-col analysis-col--info">
+                                    <img className="channel-img-small" src={item.image || DefaultImage} alt={item.title} />
+                                    <span className="channel-title-row">{item.title}</span>
+                                </div>
+
+                                {/* Колонка 2: Подписчики */}
+                                <div className="analysis-col text-center">
+                                    <div className="metrics-value-row">
+                                        {item.subscribers || '-'}
+                                    </div>
+                                </div>
+
+                                {/* Колонка 3: Просмотры */}
+                                <div className="analysis-col text-center">
+                                    <input 
+                                        className="metrics-input-row" 
+                                        type="number" 
+                                        value={localData.views}
+                                        onChange={(e) => handleChannelChange(cId, 'views', e.target.value)}
+                                        placeholder="0"
+                                        disabled={!isDraft}
+                                    />
+                                </div>
+
+                                {/* Колонка 4: Репосты */}
+                                <div className="analysis-col text-center">
+                                    <input 
+                                        className="metrics-input-row" 
+                                        type="number" 
+                                        value={localData.repost_level}
+                                        onChange={(e) => handleChannelChange(cId, 'repost_level', e.target.value)}
+                                        placeholder="0"
+                                        disabled={!isDraft}
+                                    />
+                                </div>
+
+                                {/* Колонка 5: Кнопки действий (Стек) */}
+                                <div className="analysis-col analysis-col--actions">
+                                    <Link to={`/channel/${cId}`} className="action-btn btn-details">
+                                        Подробнее
+                                    </Link>
+                                    
+                                    {isDraft && (
+                                        <>
+                                            <button className="action-btn btn-save" onClick={() => handleSaveChannel(cId)}>
+                                                Сохранить
+                                            </button>
+                                            <button className="action-btn btn-delete" onClick={() => handleRemoveChannel(cId)}>
+                                                Удалить
+                                            </button>
+                                        </>
+                                    )}
                                 </div>
                             </div>
+                        );
+                    })}
 
-                            {/* Колонка 3 — просмотры (инпут) */}
-                            <div className="analysis-col">
-                                <div className="metrics-label">Количество просмотров:</div>
-                                <input 
-                                    className="metrics-input" 
-                                    type="number" 
-                                    value={localData.views}
-                                    onChange={(e) => handleChannelChange(cId, 'views', e.target.value)}
-                                    placeholder="0"
-                                    disabled={!isDraft}
-                                />
-                            </div>
-
-                            {/* Колонка 4 — второй параметр (инпут) + Кнопка сохранения строки */}
-                            <div className="analysis-col">
-                                <div className="metrics-label">Уровень репоста:</div>
-                                <input 
-                                    className="metrics-input" 
-                                    type="number" 
-                                    value={localData.repost_level}
-                                    onChange={(e) => handleChannelChange(cId, 'repost_level', e.target.value)}
-                                    placeholder="0"
-                                    disabled={!isDraft}
-                                />
-                                
-                                {isDraft && (
-                                    <button 
-                                        className="save-mini-btn" 
-                                        onClick={() => handleSaveChannel(cId)}
-                                        style={{ marginTop: '15px', width: '100%' }}
-                                    >
-                                        Сохранить данные
-                                    </button>
-                                )}
-                            </div>
+                    {(!currentMsghistory.channels || currentMsghistory.channels.length === 0) && (
+                        <div style={{ textAlign: 'center', padding: '40px', color: '#999', background: '#F5F5F5', borderRadius: '12px', border: '1px solid #E1E5EA', boxShadow: '10px 10px 0 #D9D9D9' }}>
+                            В этой заявке пока нет каналов. Добавьте их через список каналов.
                         </div>
-                    );
-                })}
-
-                {(!currentMsghistory.channels || currentMsghistory.channels.length === 0) && (
-                    <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
-                        В этой заявке пока нет каналов. Добавьте их через список каналов.
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
 
             {/* Кнопки управления заявкой */}
