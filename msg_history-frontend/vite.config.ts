@@ -28,12 +28,12 @@ export default defineConfig({
   base: '/RIP_front-end-web-service/',
   server: {
     port: 3000, // Указываем порт для фронтенда
-    proxy: {
-      // Проксируем запросы /api на ваш бэкенд
-      '/api': {
-        target: 'http://localhost:8090', // Адрес нашего Go-сервиса
-        changeOrigin: true, // Необходимо для виртуальных хостов
-      },
-    },
+    // proxy: {
+    //   // Проксируем запросы /api на ваш бэкенд
+    //   '/api': {
+    //     target: 'http://localhost:8090', // Адрес нашего Go-сервиса
+    //     changeOrigin: true, // Необходимо для виртуальных хостов
+    //   },
+    // },
   },
 })

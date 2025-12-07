@@ -1,7 +1,7 @@
 import type { IPaginatedChannels, IChannel, ICartBadge} from '../types';
 import { CHANNELS_MOCK } from './mock';
 
-const API_PREFIX = '/api';
+const API_PREFIX = 'http://localhost:8090/api';
 
 // Получение списка каналов с фильтраией по названию
 export const getChannels = async (title: string): Promise<IPaginatedChannels> => {
