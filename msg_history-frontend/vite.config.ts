@@ -25,7 +25,7 @@ export default defineConfig({
         }
       })
   ],
-  base: '/RIP_front-end-web-service/',
+  base: '/Msghistory_front-end-web-service/',
   server: {
     port: 3000, // Указываем порт для фронтенда
     // proxy: {

@@ -7,7 +7,7 @@ import type { AppDispatch } from '../store';
 import type { IChannel, ICartBadge} from '../types';
 import './styles/ChannelsListPage.css';
 
-const Image = `/RIP_front-end-web-service/mock_images/default.png`;
+const Image = `/Msghistory_front-end-web-service/mock_images/default.png`;
 
 export const ChannelsListPage = () => {
     const [channels, setChannels] = useState<IChannel[]>([]);

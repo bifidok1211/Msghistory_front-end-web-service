@@ -3,9 +3,9 @@ import './styles/MsghistoryHomePage.css';
 
 // Картинки из public/background (поправь пути, если нужно)
 const slides = [
-  '/RIP_front-end-web-service/background/pic1.jpeg',
-  '/RIP_front-end-web-service/background/pic2.jpeg',
-  '/RIP_front-end-web-service/background/pic3.jpeg',
+  '/Msghistory_front-end-web-service/background/pic1.jpeg',
+  '/Msghistory_front-end-web-service/background/pic2.jpeg',
+  '/Msghistory_front-end-web-service/background/pic3.jpeg',
 ];
 
 export const MsghistoryHomePage = () => {
