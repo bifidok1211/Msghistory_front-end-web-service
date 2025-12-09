@@ -46,16 +46,8 @@ export const getChannelById = async (id: string): Promise<IChannel | null> => {
 // Получение корзины
 export const getCartBadge = async (): Promise<ICartBadge> => {
     try {
-        const token = localStorage.getItem('authToken'); 
-        if (!token) {
-            throw new Error('No auth token found');
-        }
 
-        const response = await fetch(`${API_PREFIX}/msghistory/channelscart`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
+        const response = await fetch(`${API_PREFIX}/msghistory/channelscart`);
 
         if (!response.ok) {
             throw new Error('Failed to fetch cart data');
