@@ -53,7 +53,7 @@ export const fetchMsghistoryById = createAsyncThunk(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const data: any = response.data;
             
-            // Маппинг каналов внутри заявки
+            // Маппинг каналов
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const mappedChannels = (data.channels || []).map((c: any) => ({
                 channel_id: c.channel_id ?? 0,
@@ -69,7 +69,7 @@ export const fetchMsghistoryById = createAsyncThunk(
                 id: data.id,
                 status: data.status ?? 1, 
                 description: data.description ?? '',
-                creator_login: data.creator_login,
+                creator_login: data.creator_login, // Нужно для модератора
                 coverage: data.coverage ?? 0,
                 coefficient: data.coefficient ?? 0,
                 creation_date: data.creation_date,
@@ -78,16 +78,14 @@ export const fetchMsghistoryById = createAsyncThunk(
                 channels: mappedChannels
             };
             
-            console.log('Загруженная заявка (после маппинга):', mappedOrder); 
             return mappedOrder;
         } catch {
-            // Исправление: переменная error не используется
             return rejectWithValue('Заявка не найдена');
         }
     }
 );
 
-// --- 3. Сохранение (Обновление полей заявки: description и т.д.) ---
+// --- 3. Сохранение полей ---
 export const updateMsghistoryFields = createAsyncThunk(
     'msghistory/updateFields',
     async ({ id, data }: { id: number; data: DsMsghistoryUpdateRequest }, { rejectWithValue }) => {
@@ -95,13 +93,12 @@ export const updateMsghistoryFields = createAsyncThunk(
             await api.msghistory.msghistoryUpdate(id, data);
             return data;
         } catch {
-             // Исправление: переменная error не используется
             return rejectWithValue('Ошибка сохранения');
         }
     }
 );
 
-// --- 4. Обновление связи канала и заявки (repost_level, views) ---
+// --- 4. Обновление канала в заявке ---
 export const updateChannelInMsghistory = createAsyncThunk(
     'msghistory/updateChannel',
     async ({ msghistoryId, channelId, data }: { msghistoryId: number; channelId: number; data: DsChannelToMsghistoryUpdateRequest }, { rejectWithValue }) => {
@@ -109,13 +106,12 @@ export const updateChannelInMsghistory = createAsyncThunk(
             await api.msghistory.channelsUpdate(msghistoryId, channelId, data);
             return { channelId, data };
         } catch {
-             // Исправление: переменная error не используется
             return rejectWithValue('Не удалось обновить данные канала в заявке');
         }
     }
 );
 
-// --- 5. Удаление канала из заявки ---
+// --- 5. Удаление канала ---
 export const removeChannelFromMsghistory = createAsyncThunk(
     'msghistory/removeChannel',
     async ({ msghistoryId, channelId }: { msghistoryId: number; channelId: number }, { rejectWithValue }) => {
@@ -123,13 +119,12 @@ export const removeChannelFromMsghistory = createAsyncThunk(
             await api.msghistory.channelsDelete(msghistoryId, channelId);
             return channelId;
         } catch {
-             // Исправление: переменная error не используется
             return rejectWithValue('Ошибка удаления канала');
         }
     }
 );
 
-// --- 6. Сформировать заявку (Form update) ---
+// --- 6. Сформировать заявку ---
 export const submitMsghistory = createAsyncThunk(
     'msghistory/submit',
     async (id: number, { rejectWithValue }) => {
@@ -137,7 +132,6 @@ export const submitMsghistory = createAsyncThunk(
             await api.msghistory.formUpdate(id);
             return id;
         } catch {
-             // Исправление: переменная error не используется
             return rejectWithValue('Ошибка формирования заявки');
         }
     }
@@ -151,8 +145,21 @@ export const deleteMsghistory = createAsyncThunk(
             await api.msghistory.msghistoryDelete(id);
             return id;
         } catch {
-             // Исправление: переменная error не используется
             return rejectWithValue('Ошибка удаления');
+        }
+    }
+);
+
+// --- 8. НОВОЕ: Решение модератора (Принять/Отклонить) ---
+export const resolveMsghistory = createAsyncThunk(
+    'msghistory/resolve',
+    async ({ id, action }: { id: number; action: 'complete' | 'reject' }, { rejectWithValue }) => {
+        try {
+            await api.msghistory.resolveUpdate(id, { action });
+            return { id, action };
+        } catch { 
+            // ИСПРАВЛЕНО: убрали (err), так как переменная не использовалась
+            return rejectWithValue('Не удалось обновить статус заявки');
         }
     }
 );
@@ -170,8 +177,10 @@ const msghistorySlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // Список
-            .addCase(fetchMsghistoryList.pending, (state) => { state.loading = true; })
+            // Список (Short Polling: лоадер только если список пуст)
+            .addCase(fetchMsghistoryList.pending, (state) => { 
+                if (state.list.length === 0) state.loading = true; 
+            })
             .addCase(fetchMsghistoryList.fulfilled, (state, action) => {
                 state.loading = false;
                 state.list = action.payload || []; 
@@ -184,14 +193,12 @@ const msghistorySlice = createSlice({
                 state.currentMsghistory = action.payload;
             })
             
-            // Обновление полей заявки (локально)
+            // Обновления (локально)
             .addCase(updateMsghistoryFields.fulfilled, (state, action) => {
                 if (state.currentMsghistory) {
                     state.currentMsghistory = { ...state.currentMsghistory, ...action.payload };
                 }
             })
-            
-            // Обновление данных канала внутри заявки
             .addCase(updateChannelInMsghistory.fulfilled, (state, action) => {
                 if (state.currentMsghistory && state.currentMsghistory.channels) {
                     const channel = state.currentMsghistory.channels.find(c => c.channel_id === action.payload.channelId);
@@ -201,19 +208,27 @@ const msghistorySlice = createSlice({
                     }
                 }
             })
-            
-            // Удаление канала
             .addCase(removeChannelFromMsghistory.fulfilled, (state, action) => {
                 if (state.currentMsghistory && state.currentMsghistory.channels) {
                     state.currentMsghistory.channels = state.currentMsghistory.channels.filter(c => c.channel_id !== action.payload);
                 }
             })
             
-            // Успешные операции формирования/удаления
+            // Успех (Сформировать / Удалить)
             .addCase(submitMsghistory.fulfilled, (state) => { state.operationSuccess = true; })
             .addCase(deleteMsghistory.fulfilled, (state) => { state.operationSuccess = true; })
+
+            // Решение модератора
+            .addCase(resolveMsghistory.fulfilled, (state, action) => {
+                state.operationSuccess = true;
+                // Оптимистичное обновление
+                if (state.currentMsghistory && state.currentMsghistory.id === action.payload.id) {
+                    // 4 = Completed, 5 = Rejected
+                    state.currentMsghistory.status = action.payload.action === 'complete' ? 4 : 5;
+                }
+            })
             
-            // Сброс при выходе
+            // Сброс
             .addCase(logoutUser.fulfilled, () => initialState);
     }
 });

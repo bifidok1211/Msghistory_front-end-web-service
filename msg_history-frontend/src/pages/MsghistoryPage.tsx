@@ -8,6 +8,7 @@ import {
     removeChannelFromMsghistory,
     submitMsghistory,
     deleteMsghistory,
+    resolveMsghistory, 
     resetOperationSuccess,
     clearCurrentMsghistory
 } from '../store/slices/msghistorySlice';
@@ -19,12 +20,14 @@ import './styles/MsghistoryPage.css';
 const DefaultImage = '/mock_images/default.png';
 
 const STATUS_DRAFT = 1;
+const STATUS_FORMED = 3;
 
 export const MsghistoryPage = () => {
     const { id } = useParams<{ id: string }>();
     const dispatch = useDispatch<AppDispatch>();
     
     const { currentMsghistory, loading, operationSuccess } = useSelector((state: RootState) => state.msghistory);
+    const { user } = useSelector((state: RootState) => state.user);
     
     const [description, setDescription] = useState('');
     const [channelsData, setChannelsData] = useState<{[key: number]: { views: number, repost_level: number }}>({});
@@ -83,19 +86,22 @@ export const MsghistoryPage = () => {
     }
 
     const isDraft = currentMsghistory.status === STATUS_DRAFT;
+    const isFormed = currentMsghistory.status === STATUS_FORMED;
+    const isModerator = user?.moderator;
     
     const breadcrumbs = [
         { label: 'Мои заявки', path: '/msghistory' },
         { label: `Заявка №${currentMsghistory.id}`, active: true },
     ];
 
+    // --- Обработчики (БЕЗ алертов и конфирмов) ---
+
     const handleSaveDescription = () => {
         if (currentMsghistory.id) {
             dispatch(updateMsghistoryFields({
                 id: currentMsghistory.id,
                 data: { description }
-            }))
-            .unwrap()
+            }));
         }
     };
 
@@ -119,33 +125,40 @@ export const MsghistoryPage = () => {
                     views: channelsData[cId].views,
                     repost_level: channelsData[cId].repost_level
                 }
-            }))
-            .unwrap()
+            }));
         }
     };
 
     const handleRemoveChannel = (cId: number) => {
-        if (window.confirm("Убрать канал из списка?")) {
-            dispatch(removeChannelFromMsghistory({
-                msghistoryId: currentMsghistory.id!,
-                channelId: cId
-            }))
-            .unwrap()
-            .then(() => console.log("Канал удален из заявки"));
-        }
+        dispatch(removeChannelFromMsghistory({
+            msghistoryId: currentMsghistory.id!,
+            channelId: cId
+        }));
     };
 
     const handleSubmitOrder = () => {
         if (currentMsghistory.id) {
-            dispatch(submitMsghistory(currentMsghistory.id))
-                .unwrap()
+            dispatch(submitMsghistory(currentMsghistory.id));
         }
     };
 
     const handleDeleteOrder = () => {
-        if (currentMsghistory.id && window.confirm('Вы точно хотите удалить этот пост?')) {
-            dispatch(deleteMsghistory(currentMsghistory.id))
-                .unwrap()
+        if (currentMsghistory.id) {
+            dispatch(deleteMsghistory(currentMsghistory.id));
+        }
+    };
+
+    // --- Действия модератора ---
+    
+    const handleApprove = () => {
+        if (currentMsghistory.id) {
+            dispatch(resolveMsghistory({ id: currentMsghistory.id, action: 'complete' }));
+        }
+    };
+
+    const handleReject = () => {
+        if (currentMsghistory.id) {
+            dispatch(resolveMsghistory({ id: currentMsghistory.id, action: 'reject' }));
         }
     };
 
@@ -157,7 +170,9 @@ export const MsghistoryPage = () => {
                 <CustomBreadcrumbs crumbs={breadcrumbs} />
             </div>
 
-            <div className="page-title">Анализ поста</div>
+            <div className="page-title">
+                {isModerator ? 'Анализ поста' : 'Анализ поста'}
+            </div>
 
             {/* ВЕРХНЯЯ ЗОНА */}
             <div className="order-top">
@@ -183,7 +198,9 @@ export const MsghistoryPage = () => {
                 <div className="order-summary panel">
                     <p className="order-summary__title">Результат</p>
                     
-                    {!isDraft ? (
+                    {/* Если черновик или сформирована -> показываем заглушку.
+                        Если завершена/отклонена -> показываем цифры. */}
+                    {!isDraft && !isFormed ? (
                         <>
                             <div className="order-summary__row">
                                 <span>Охват:</span>
@@ -198,21 +215,29 @@ export const MsghistoryPage = () => {
                                 </span>
                             </div>
                             <div style={{ marginTop: 'auto', fontSize: '14px', color: '#28a745', textAlign: 'center' }}>
-                                Заявка сформирована
+                                Расчет завершен
                             </div>
                         </>
                     ) : (
-                        <div style={{ marginTop: '10px', color: '#999', fontSize: '14px', lineHeight: '1.4' }}>
-                            Результаты расчета будут доступны после формирования заявки.
+                        <div style={{ 
+                            marginTop: 'auto', 
+                            marginBottom: 'auto', 
+                            color: isFormed ? '#ffc107' : '#999', 
+                            fontSize: '14px', 
+                            lineHeight: '1.4', 
+                            textAlign: 'center',
+                            fontWeight: isFormed ? '600' : 'normal'
+                        }}>
+                            {isFormed 
+                                ? 'Ожидает проверки' 
+                                : 'Результаты расчета будут доступны после формирования заявки.'}
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* НОВАЯ ТАБЛИЦА С КАРТОЧКАМИ */}
+            {/* СПИСОК КАНАЛОВ */}
             <div className="analysis-container">
-                
-                {/* ШАПКА ТАБЛИЦЫ */}
                 <div className="list-header">
                     <div className="header-col">Канал</div>
                     <div className="header-col text-center">Подписчики</div>
@@ -265,7 +290,7 @@ export const MsghistoryPage = () => {
                                     />
                                 </div>
 
-                                {/* Колонка 5: Кнопки действий (Стек) */}
+                                {/* Колонка 5: Кнопки */}
                                 <div className="analysis-col analysis-col--actions">
                                     <Link to={`/channel/${cId}`} className="action-btn btn-details">
                                         Подробнее
@@ -294,7 +319,7 @@ export const MsghistoryPage = () => {
                 </div>
             </div>
 
-            {/* Кнопки управления заявкой */}
+            {/* Кнопки управления (ОБЫЧНЫЙ ПОЛЬЗОВАТЕЛЬ) */}
             {isDraft && (
                 <div className="tg-actions-row">
                     <button className="card-button" style={{ background: '#d9534f' }} onClick={handleDeleteOrder}>
@@ -304,6 +329,34 @@ export const MsghistoryPage = () => {
                     <button className="card-button" style={{ background: '#28a745' }} onClick={handleSubmitOrder}>
                         Сформировать отчет
                     </button>
+                </div>
+            )}
+
+            {/* Панель МОДЕРАТОРА (Светло-желтый фон, Желтая обводка) */}
+            {isModerator && isFormed && (
+                <div className="container" style={{ marginBottom: '40px' }}>
+                    <div className="panel" style={{ 
+                        padding: '20px', 
+                        border: '2px solid #ffc107', 
+                        backgroundColor: '#fffbe6' 
+                    }}>
+                        <div style={{ display: 'flex', gap: '20px', justifyContent: 'flex-end' }}>
+                            <button 
+                                className="card-button" 
+                                style={{ background: '#fff', color: '#dc3545', border: '2px solid #dc3545' }}
+                                onClick={handleReject}
+                            >
+                                Отклонить
+                            </button>
+                            <button 
+                                className="card-button" 
+                                style={{ background: '#28a745' }} 
+                                onClick={handleApprove}
+                            >
+                                Подтвердить
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </>
