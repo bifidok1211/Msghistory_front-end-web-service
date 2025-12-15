@@ -25,14 +25,23 @@ export default defineConfig({
         }
       })
   ],
+  // --- НАСТРОЙКИ ДЛЯ TAURI ---
+  clearScreen: false,
   server: {
-    port: 3000, // Указываем порт для фронтенда
+    port: 3000,
+    strictPort: true, // Tauri ждет именно этот порт
     proxy: {
-      // Проксируем запросы /api на ваш бэкенд
       '/api': {
-        target: 'http://localhost:8090', // Адрес нашего Go-сервиса
-        changeOrigin: true, // Необходимо для виртуальных хостов
+        target: 'http://localhost:8090',
+        changeOrigin: true,
       },
     },
+  },
+  envPrefix: ['VITE_', 'TAURI_'],
+  build: {
+    // Tauri использует движки, которые поддерживают современные фичи
+    target: process.env.TAURI_PLATFORM == 'windows' ? 'chrome105' : 'safari13',
+    minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
+    sourcemap: !!process.env.TAURI_DEBUG,
   },
 })
