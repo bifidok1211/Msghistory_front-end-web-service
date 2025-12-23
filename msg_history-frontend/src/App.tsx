@@ -1,14 +1,42 @@
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import React from 'react'; // Убедимся, что React импортирован
+
+// Компоненты и страницы
 import { AppNavbar } from './components/Navbar';
 import { MsghistoryHomePage } from './pages/MsghistoryHomePage';
 import { ChannelsListPage } from './pages/ChannelsListPage';
 import { ChannelDetailPage } from './pages/ChannelDetailPage';
-import { useEffect } from 'react';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { MsghistoryListPage } from './pages/MsghistoryListPage';
 import { MsghistoryPage } from './pages/MsghistoryPage';
+import { AdminChannelsPage } from './pages/AdminChannelsPage';
+import { ForbiddenPage } from './pages/ForbiddenPage';
+import { NotFoundPage } from './pages/NotFoundPage';
+
+// Типы
+import type { RootState } from './store';
+
+// Обертка для защищенных маршрутов
+// ИСПРАВЛЕНИЕ: Заменили JSX.Element на React.ReactNode
+const ProtectedRoute = ({ children, onlyModerator = false }: { children: React.ReactNode, onlyModerator?: boolean }) => {
+    const { user, isAuthenticated } = useSelector((state: RootState) => state.user);
+
+    // Если не авторизован — доступ запрещен
+    if (!isAuthenticated) {
+        return <ForbiddenPage />; 
+    }
+
+    // Если страница только для модераторов, а юзер не модератор — доступ запрещен
+    if (onlyModerator && !user?.moderator) {
+        return <ForbiddenPage />; 
+    }
+
+    return <>{children}</>; // Оборачиваем во фрагмент, так как ReactNode может быть текстом
+};
 
 const MainLayout = () => (
     <>
@@ -21,9 +49,7 @@ const MainLayout = () => (
 
 function App() {
 
-    // При загрузке страницы удаляем токены из хранилища.
-    // Так как в userSlice мы их больше не читаем при старте,
-    // конфликта (гонки) больше не будет. Интерфейс сразу будет "гостевым".
+    // При загрузке страницы удаляем токены из хранилища (сброс сессии по F5)
     useEffect(() => {
         localStorage.removeItem('authToken');
         localStorage.removeItem('userInfo');
@@ -32,16 +58,59 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
+                {/* Публичные страницы */}
                 <Route path="/" element={<MsghistoryHomePage />} />
                 <Route path="/login" element={<LoginPage />} />      
-                <Route path="/register" element={<RegisterPage />} />  
+                <Route path="/register" element={<RegisterPage />} />
+                
+                {/* Страница ошибки доступа */}
+                <Route path="/forbidden" element={<ForbiddenPage />} />
+
+                {/* Основной лейаут с Навбаром */}
                 <Route element={<MainLayout />}>
+                    {/* Публичные внутри приложения */}
                     <Route path="/channels" element={<ChannelsListPage />} />
                     <Route path="/channel/:id" element={<ChannelDetailPage />} />
-                    <Route path="/profile" element={<ProfilePage />} />
-                    <Route path="/msghistory" element={<MsghistoryListPage />} />
-                    <Route path="/msghistory/:id" element={<MsghistoryPage />} /> 
+
+                    {/* Защищенные маршруты (Требуют авторизации) */}
+                    <Route 
+                        path="/profile" 
+                        element={
+                            <ProtectedRoute>
+                                <ProfilePage />
+                            </ProtectedRoute>
+                        } 
+                    />
+                    <Route 
+                        path="/msghistory" 
+                        element={
+                            <ProtectedRoute>
+                                <MsghistoryListPage />
+                            </ProtectedRoute>
+                        } 
+                    />
+                    <Route 
+                        path="/msghistory/:id" 
+                        element={
+                            <ProtectedRoute>
+                                <MsghistoryPage />
+                            </ProtectedRoute>
+                        } 
+                    />
+
+                    {/* Маршрут ТОЛЬКО для модератора */}
+                    <Route 
+                        path="/channels/manage" 
+                        element={
+                            <ProtectedRoute onlyModerator={true}>
+                                <AdminChannelsPage />
+                            </ProtectedRoute>
+                        } 
+                    />
                 </Route>
+
+                {/* Обработка 404 */}
+                <Route path="*" element={<NotFoundPage />} />
             </Routes>
         </BrowserRouter>
     );

@@ -1,0 +1,105 @@
+/* Ограничитель ширины контента для обычного юзера */
+.ri-content {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Карточка заявки */
+.ri-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #E1E5EA !important;
+}
+
+.ri-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Подсветка желтым для модератора */
+.table-warning-soft {
+    background-color: #fffbe6 !important; /* Светло-желтый */
+    border-color: #ffe58f !important;
+}
+
+.ri-card-body {
+    padding: 20px 24px;
+}
+
+/* Верхняя часть карточки */
+.ri-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.ri-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #212529;
+}
+
+/* Сетка данных */
+.ri-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 колонки */
+    gap: 16px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+}
+
+/* Если есть подвал (у модератора), добавляем линию */
+.ri-foot + .ri-grid, 
+.ri-grid:has(+ .ri-foot) {
+    border-bottom: 1px solid #E1E5EA;
+}
+
+.ri-cell {
+    display: flex;
+    flex-direction: column;
+}
+
+.ri-label {
+    font-size: 12px;
+    color: #6c757d;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.ri-value {
+    font-size: 14px;
+    color: #000;
+}
+
+/* Подвал карточки */
+.ri-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px; /* Отступ сверху от линии */
+}
+
+.ri-muted {
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.ri-foot-strong {
+    color: #212529;
+    font-weight: 600;
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+    .ri-grid {
+        grid-template-columns: 1fr 1fr; /* 2 колонки на телефоне */
+        gap: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ri-grid {
+        grid-template-columns: 1fr; /* 1 колонка на совсем маленьких экранах */
+    }
+}

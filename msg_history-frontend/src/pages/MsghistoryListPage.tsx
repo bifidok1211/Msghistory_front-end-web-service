@@ -7,8 +7,19 @@ import type { AppDispatch, RootState } from '../store';
 import { AppNavbar } from '../components/Navbar';
 import type { DsMsghistoryDTO } from '../api/Api';
 import { ExclamationCircleFill, PersonFill } from 'react-bootstrap-icons';
+import './styles/MsghistoryListPage.css';
 
 const STATUS_FORMED = 3;
+
+const getStatusText = (status: number | undefined) => {
+    switch (status) {
+        case 2: return "Удалена";
+        case 3: return "Сформирована";
+        case 4: return "Завершена";
+        case 5: return "Отклонена";
+        default: return "Неизвестно";
+    }
+};
 
 const getStatusBadge = (status: number | undefined) => {
     switch (status) {
@@ -20,11 +31,11 @@ const getStatusBadge = (status: number | undefined) => {
     }
 };
 
-const formatDateTime = (value?: string) => {
-    if (!value) return null;
+const formatDate = (value?: string) => {
+    if (!value) return "—";
     const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return null;
-    return d.toLocaleString("ru-RU");
+    if (Number.isNaN(d.getTime())) return "—";
+    return d.toLocaleDateString("ru-RU");
 };
 
 const getDefaultDateFilters = () => {
@@ -118,15 +129,12 @@ export const MsghistoryListPage = () => {
             <AppNavbar />
             
             <div style={{ paddingTop: '90px', paddingBottom: '40px', backgroundColor: '#fff' }}>
-                {/* Используем fluid, но для обычного юзера ограничиваем ширину внутри через Row */}
-                <Container fluid> 
-                    <h2 className="text-center fw-bold mb-4" style={{ color: '#000', fontFamily: '"Open Sans", Arial, sans-serif' }}>
-                        {isModerator ? 'История заявок' : 'История заявок'}
-                    </h2>
-
+                <Container fluid={isModerator}> 
+                    {/* Переместил заголовок ВНИЗ (в правую колонку или в центр, если юзер) */}
+                    
                     <Row className={isModerator ? "" : "justify-content-center"}>
                         
-                        {/* ЛЕВАЯ КОЛОНКА (Только модератор) */}
+                        {/* ЛЕВАЯ КОЛОНКА (Модератор) */}
                         {isModerator && (
                             <Col lg={3} className="mb-4">
                                 <Card className="shadow-sm border-0 h-100" style={{ border: '1px solid #E1E5EA' }}>
@@ -169,152 +177,169 @@ export const MsghistoryListPage = () => {
                         )}
 
                         {/* ПРАВАЯ/ЦЕНТРАЛЬНАЯ КОЛОНКА */}
-                        <Col lg={isModerator ? 9 : 10} xl={isModerator ? 9 : 8}> {/* <-- ИСПРАВЛЕНИЕ: Ограничиваем ширину для юзера */}
-                            
-                            {/* Фильтры */}
-                            <Card className="mb-4 border-0 shadow-sm" style={{ backgroundColor: '#F5F5F5', border: '1px solid #E1E5EA' }}>
-                                <Card.Body>
-                                    <Row className="g-3">
-                                        <Col md={4}>
-                                            <Form.Label className="fw-bold">Статус</Form.Label>
-                                            <Form.Select 
-                                                name="status" 
-                                                value={filters.status} 
-                                                onChange={handleFilterChange}
-                                                style={{ border: '1px solid #E1E5EA', borderRadius: '8px' }}
-                                            >
-                                                <option value="all">Все</option>
-                                                <option value="3">Сформирована</option>
-                                                <option value="4">Завершена</option>
-                                                <option value="5">Отклонена</option>
-                                            </Form.Select>
-                                        </Col>
-                                        <Col md={4}>
-                                            <Form.Label className="fw-bold">Дата создания (от)</Form.Label>
-                                            <Form.Control 
-                                                type="date" 
-                                                name="from" 
-                                                value={filters.from} 
-                                                onChange={handleFilterChange}
-                                                style={{ border: '1px solid #E1E5EA', borderRadius: '8px' }}
-                                            />
-                                        </Col>
-                                        <Col md={4}>
-                                            <Form.Label className="fw-bold">Дата создания (до)</Form.Label>
-                                            <Form.Control 
-                                                type="date" 
-                                                name="to" 
-                                                value={filters.to} 
-                                                onChange={handleFilterChange}
-                                                style={{ border: '1px solid #E1E5EA', borderRadius: '8px' }}
-                                            />
-                                        </Col>
-                                    </Row>
-                                </Card.Body>
-                            </Card>
+                        <Col lg={isModerator ? 9 : 12}>
+                            <div className="ri-content">
+                                {/* ЗАГОЛОВОК ТЕПЕРЬ ЗДЕСЬ (над фильтрами) */}
+                                <h2 className="text-center fw-bold mb-4" style={{ color: '#000', fontFamily: '"Open Sans", Arial, sans-serif' }}>
+                                    {isModerator ? 'История заявок' : 'История заявок'}
+                                </h2>
 
-                            {/* Информация */}
-                            {!loading && (
-                                <div className="d-flex justify-content-between align-items-center mb-4 px-1 w-100">
-                                    <div className="text-muted">
-                                        Найдено заявок: <b>{displayedList.length}</b>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Контент */}
-                            {loading && displayedList.length === 0 ? (
-                                <div className="text-center" style={{ marginTop: '40px' }}>
-                                    <Spinner animation="border" style={{ color: '#24A1DE' }} />
-                                    <p className="mt-2 text-muted">Загрузка списка...</p>
-                                </div>
-                            ) : displayedList.length > 0 ? (
-                                /* ИСПРАВЛЕНИЕ: Одинаковая сетка для всех */
-                                <Row xs={1} md={2} lg={3} className="g-4">
-                                    {displayedList.map((order: DsMsghistoryDTO) => {
-                                        const created = formatDateTime(order.creation_date);
-                                        const formed = formatDateTime(order.forming_date);
-                                        const dateEnd = formatDateTime(order.complition_date);
-                                        
-                                        const displayDate = order.status === 4 || order.status === 5 ? dateEnd : formed;
-                                        const dateLabel = order.status === 4 || order.status === 5 ? "Завершена:" : "Сформирована:";
-
-                                        const isActionRequired = isModerator && order.status === STATUS_FORMED;
-                                        const cardStyle = isActionRequired 
-                                            ? { border: '2px solid #ffc107', backgroundColor: '#fffbe6' } 
-                                            : { border: '1px solid #E1E5EA', backgroundColor: '#fff' };
-
-                                        return (
-                                            <Col key={order.id}>
-                                                <Card 
-                                                    className="h-100 shadow-sm card-hover-effect"
-                                                    style={{ 
-                                                        cursor: "pointer", 
-                                                        transition: 'transform 0.2s, box-shadow 0.2s',
-                                                        ...cardStyle
-                                                    }}
-                                                    onClick={() => handleCardClick(order.id)}
+                                {/* Фильтры */}
+                                <Card className="mb-4 border-0 shadow-sm" style={{ backgroundColor: '#F5F5F5', border: '1px solid #E1E5EA' }}>
+                                    <Card.Body>
+                                        <Row className="g-3 align-items-end">
+                                            <Col md={4}>
+                                                <Form.Label className="fw-bold small text-muted">Статус</Form.Label>
+                                                <Form.Select 
+                                                    name="status" 
+                                                    value={filters.status} 
+                                                    onChange={handleFilterChange}
+                                                    style={{ border: '1px solid #E1E5EA', borderRadius: '8px' }}
+                                                    size="sm"
                                                 >
-                                                    <Card.Body className="d-flex flex-column">
-                                                        <div className="d-flex justify-content-between align-items-center mb-3">
-                                                            <Card.Title className="mb-0 fw-bold" style={{ fontSize: '18px' }}>
-                                                                Заявка №{order.id}
-                                                            </Card.Title>
-                                                            {getStatusBadge(order.status)}
-                                                        </div>
-
-                                                        {isModerator && (
-                                                            <div className="small text-muted mb-2">
-                                                                Пользователь ID: <b>{order.creator_login}</b>
-                                                            </div>
-                                                        )}
-
-                                                        <div className="small text-muted mb-3" style={{ fontSize: '13px' }}>
-                                                            <div className="d-flex justify-content-between">
-                                                                <span>Создана:</span>
-                                                                <span className="text-dark">{created || "--"}</span>
-                                                            </div>
-                                                            <div className="d-flex justify-content-between mt-1">
-                                                                <span>{dateLabel}</span>
-                                                                <span className="text-dark">{displayDate || "--"}</span>
-                                                            </div>
-                                                        </div>
-
-                                                        <hr className="my-2 mt-auto" style={{ borderColor: '#E1E5EA' }} />
-
-                                                        <div className="mt-3">
-                                                            {isActionRequired ? (
-                                                                <div className="small text-center" style={{ padding: '5px 0' }}>
-                                                                    <b className="text-warning">Требует проверки</b>
-                                                                </div>
-                                                            ) : (
-                                                                <>
-                                                                    <div className="d-flex justify-content-between mb-1" style={{ fontSize: '14px' }}>
-                                                                        <span className="text-muted">Охват:</span>
-                                                                        <b style={{ color: '#24A1DE' }}>
-                                                                            {(order.coverage || 0).toFixed(1)}%
-                                                                        </b>
-                                                                    </div>
-                                                                    <div className="d-flex justify-content-between" style={{ fontSize: '14px' }}>
-                                                                        <span className="text-muted">Коэффициент:</span>
-                                                                        <b style={{ color: '#24A1DE' }}>
-                                                                            {(order.coefficient || 0).toFixed(2)}
-                                                                        </b>
-                                                                    </div>
-                                                                </>
-                                                            )}
-                                                        </div>
-                                                    </Card.Body>
-                                                </Card>
+                                                    <option value="all">Все</option>
+                                                    <option value="3">Сформирована</option>
+                                                    <option value="4">Завершена</option>
+                                                    <option value="5">Отклонена</option>
+                                                </Form.Select>
                                             </Col>
-                                        );
-                                    })}
-                                </Row>
-                            ) : (
-                                <div className="text-center py-5 text-muted bg-light rounded-3 w-100">
-                                    Заявок не найдено за выбранный период
-                                </div>
-                            )}
+                                            <Col md={4}>
+                                                <Form.Label className="fw-bold small text-muted">Дата создания (от)</Form.Label>
+                                                <Form.Control 
+                                                    type="date" 
+                                                    name="from" 
+                                                    value={filters.from} 
+                                                    onChange={handleFilterChange}
+                                                    style={{ border: '1px solid #E1E5EA', borderRadius: '8px' }}
+                                                    size="sm"
+                                                />
+                                            </Col>
+                                            <Col md={4}>
+                                                <Form.Label className="fw-bold small text-muted">Дата создания (до)</Form.Label>
+                                                <Form.Control 
+                                                    type="date" 
+                                                    name="to" 
+                                                    value={filters.to} 
+                                                    onChange={handleFilterChange}
+                                                    style={{ border: '1px solid #E1E5EA', borderRadius: '8px' }}
+                                                    size="sm"
+                                                />
+                                            </Col>
+                                        </Row>
+                                    </Card.Body>
+                                </Card>
+
+                                {/* Спиннер */}
+                                {loading && displayedList.length === 0 ? (
+                                    <div className="text-center" style={{ marginTop: '40px' }}>
+                                        <Spinner animation="border" style={{ color: '#24A1DE' }} />
+                                        <p className="mt-2 text-muted">Загрузка списка...</p>
+                                    </div>
+                                ) : (
+                                    <>
+                                        {/* Информация о кол-ве */}
+                                        <Row className="mb-2">
+                                            <Col>
+                                                <div className="small text-muted">
+                                                    Найдено заявок: <strong>{displayedList.length}</strong>
+                                                </div>
+                                            </Col>
+                                        </Row>
+
+                                        {displayedList.length === 0 ? (
+                                            <div className="text-center py-5 text-muted bg-light rounded-3 w-100">
+                                                Заявок не найдено за выбранный период
+                                            </div>
+                                        ) : (
+                                            /* СПИСОК КАРТОЧЕК */
+                                            <div className="d-flex flex-column gap-3">
+                                                {displayedList.map((order: DsMsghistoryDTO) => {
+                                                    const created = formatDate(order.creation_date);
+                                                    const formed = formatDate(order.forming_date);
+                                                    const dateEnd = formatDate(order.complition_date);
+
+                                                    const hasResults = (order.coverage !== undefined && order.coverage > 0) || 
+                                                                    (order.coefficient !== undefined && order.coefficient > 0);
+                                                    
+                                                    let resultText = "0% / 0.00";
+                                                    if (hasResults) {
+                                                        resultText = `${(order.coverage || 0).toFixed(1)}% / ${(order.coefficient || 0).toFixed(2)}`;
+                                                    }
+
+                                                    const isPending = isModerator && order.status === STATUS_FORMED;
+                                                    const cardClass = isPending ? "ri-card table-warning-soft" : "ri-card";
+
+                                                    return (
+                                                        <Card
+                                                            key={order.id}
+                                                            className={`shadow-sm border-0 ${cardClass}`}
+                                                            style={{ cursor: "pointer" }}
+                                                            onClick={() => handleCardClick(order.id)}
+                                                        >
+                                                            <Card.Body className="ri-card-body">
+                                                                <div className="ri-head">
+                                                                    <div className="ri-title">Заявка №{order.id}</div>
+                                                                    <div className="ri-badge">
+                                                                        {getStatusBadge(order.status)}
+                                                                    </div>
+                                                                </div>
+
+                                                                <div className="ri-grid">
+                                                                    <div className="ri-cell">
+                                                                        <div className="ri-label">Статус</div>
+                                                                        <div className="ri-value">
+                                                                            {getStatusText(order.status)}
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div className="ri-cell">
+                                                                        <div className="ri-label">Дата создания</div>
+                                                                        <div className="ri-value">
+                                                                            {created}
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div className="ri-cell">
+                                                                        <div className="ri-label">
+                                                                            {order.status === 4 || order.status === 5 ? "Дата завершения" : "Дата формирования"}
+                                                                        </div>
+                                                                        <div className="ri-value">
+                                                                            {order.status === 4 || order.status === 5 ? dateEnd : formed}
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div className="ri-cell">
+                                                                        <div className="ri-label">
+                                                                            Результат (Охват/Коэф)
+                                                                        </div>
+                                                                        <div className="ri-value" style={{color: '#24A1DE', fontWeight: 600}}>
+                                                                            {resultText}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                {/* НИЖНЯЯ СТРОКА: Убрал кнопку Открыть, оставил только ID создателя для модера */}
+                                                                {isModerator && (
+                                                                    <div className="ri-foot">
+                                                                        <div className="ri-foot-left">
+                                                                            <span className="ri-muted">
+                                                                                Создатель ID:{" "}
+                                                                                <span className="ri-foot-strong">
+                                                                                    {order.creator_login}
+                                                                                </span>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </Card.Body>
+                                                        </Card>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                            </div>
                         </Col>
                     </Row>
                 </Container>

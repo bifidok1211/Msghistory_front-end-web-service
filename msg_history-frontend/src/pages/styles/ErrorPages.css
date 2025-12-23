@@ -1,0 +1,115 @@
+/* Контейнер на весь экран, перекрывающий всё */
+.error-page-container {
+    position: fixed; /* Фиксируем, чтобы не зависеть от отступов main/body */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #F2F4F6; /* Светло-серый фон */
+    z-index: 2000; /* Поверх навбара и всего остального */
+    font-family: "Open Sans", Arial, sans-serif;
+}
+
+/* Карточка ошибки */
+.error-card {
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1); /* Мягкая, но глубокая тень */
+    padding: 60px 40px;
+    max-width: 480px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #E1E5EA; /* Тонкая рамка */
+}
+
+/* Огромные цифры на фоне */
+.error-code {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 180px;
+    font-weight: 900;
+    color: rgba(36, 161, 222, 0.08); /* Еле заметный синий */
+    z-index: 0;
+    pointer-events: none;
+    line-height: 1;
+    user-select: none;
+}
+
+/* Контент поверх цифр */
+.error-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Кружок с иконкой */
+.error-icon-wrapper {
+    width: 100px;
+    height: 100px;
+    background-color: rgba(36, 161, 222, 0.1); /* Светло-синий круг */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    color: #24A1DE;
+}
+
+.error-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 16px;
+}
+
+.error-desc {
+    color: #707579; /* Цвет текста Telegram */
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 32px;
+}
+
+/* Кнопки */
+.error-btn {
+    background-color: #24A1DE;
+    border-color: #24A1DE;
+    color: #fff;
+    font-weight: 600;
+    padding: 10px 24px;
+    font-size: 16px;
+    transition: transform 0.2s, background-color 0.2s;
+    border-radius: 50rem; /* pill */
+}
+
+.error-btn:hover {
+    background-color: #1b8ec6;
+    border-color: #1b8ec6;
+    transform: translateY(-2px);
+    color: #fff;
+}
+
+.error-btn-outline {
+    background-color: transparent;
+    border: 2px solid #E1E5EA;
+    color: #707579;
+    font-weight: 600;
+    padding: 10px 24px;
+    font-size: 16px;
+    transition: all 0.2s;
+    border-radius: 50rem;
+}
+
+.error-btn-outline:hover {
+    border-color: #24A1DE;
+    color: #24A1DE;
+    background-color: transparent;
+}
