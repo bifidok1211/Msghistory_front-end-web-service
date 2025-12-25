@@ -41,7 +41,7 @@ export const RegisterPage = () => {
 
 
                         <Form onSubmit={handleSubmit}>
-                            {/* <Form.Floating className="mb-3">
+                            <Form.Floating className="mb-3">
                                 <Form.Control
                                     id="fullName"
                                     type="text"
@@ -51,7 +51,7 @@ export const RegisterPage = () => {
                                     required
                                 />
                                 <label htmlFor="fullName" style={{ color: '#999' }}>ФИО</label>
-                            </Form.Floating> */}
+                            </Form.Floating>
 
                             <Form.Floating className="mb-3">
                                 <Form.Control
