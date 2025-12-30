@@ -16,6 +16,7 @@ import { MsghistoryPage } from './pages/MsghistoryPage';
 import { AdminChannelsPage } from './pages/AdminChannelsPage';
 import { ForbiddenPage } from './pages/ForbiddenPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import {AdminChannelEditPage} from './pages/AdminChannelEditPage';
 
 // Типы
 import type { RootState } from './store';
@@ -108,6 +109,9 @@ function App() {
                         } 
                     />
                 </Route>
+                <Route path="/channels/manage/new" element={<ProtectedRoute onlyModerator={true}><AdminChannelEditPage /></ProtectedRoute>} />
+//    <Route path="/channels/manage/:id" element={<ProtectedRoute onlyModerator={true}><AdminChannelEditPage /></ProtectedRoute>} />
+
 
                 {/* Обработка 404 */}
                 <Route path="*" element={<NotFoundPage />} />

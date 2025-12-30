@@ -5,7 +5,6 @@ import { fetchChannels } from '../store/slices/channelsSlice';
 import { fetchCartBadge, addChannelToDraft } from '../store/slices/cartSlice';
 import { setSearchTerm, selectSearchTerm } from '../store/slices/filterSlice';
 import type { AppDispatch, RootState } from '../store';
-import { GearFill } from 'react-bootstrap-icons';
 import './styles/ChannelsListPage.css';
 
 const DefaultImage = `/mock_images/default.png`;
@@ -20,7 +19,7 @@ export const ChannelsListPage = () => {
 
     const { msghistory_id, count } = useSelector((state: RootState) => state.cart);
     
-    const { isAuthenticated, user } = useSelector((state: RootState) => state.user);
+    const { isAuthenticated } = useSelector((state: RootState) => state.user);
 
     useEffect(() => {
         setInputValue(searchTerm);
@@ -54,47 +53,16 @@ export const ChannelsListPage = () => {
             <div className="page-title">Каналы</div>
 
             <div className="search-row">
-                <form 
-                    onSubmit={handleSearchSubmit} 
-                    className="search-form" 
-                    style={{ display: 'flex', gap: '10px', alignItems: 'center', flexGrow: 1 }}
-                >
-                    {/* 1. Кнопка Управление (СЛЕВА) */}
-                    {user?.moderator && (
-                        <button 
-                            className="tg-btn"
-                            onClick={() => navigate('/channels/manage')}
-                            title="Управление каналами"
-                            type="button" // Важно: type="button", чтобы не сабмитить форму поиска
-                            style={{ 
-                                display: 'flex', 
-                                alignItems: 'center', 
-                                gap: '8px', 
-                                padding: '0 20px', 
-                                height: '45px',
-                                whiteSpace: 'nowrap',
-                                minWidth: 'auto',
-                                marginRight: '5px'
-                            }}
-                        >
-                            <GearFill size={18} /> 
-                            <span className="d-none d-md-inline">Управление</span>
-                        </button>
-                    )}
-
-                    {/* 2. Инпут поиска (ПО ЦЕНТРУ, Растягивается) */}
+                <form onSubmit={handleSearchSubmit} className="search-form">
                     <input 
                         className="search-input" 
                         type="search"
                         placeholder="Введите название канала для поиска..."
                         value={inputValue} 
-                        onChange={(e) => setInputValue(e.target.value)}
-                        // Добавляем flex-grow, чтобы инпут занимал все доступное место между кнопкой и корзиной
-                        style={{ flexGrow: 1, width: 'auto' }} 
+                        onChange={(e) => setInputValue(e.target.value)} 
                     />
                 </form>
 
-                {/* 3. Корзина (СПРАВА) */}
                 {isCartActive ? (
                     <a 
                         className="badge-icon" 
